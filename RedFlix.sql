@@ -1,113 +1,118 @@
-create database RedFlix
-use RedFlix
+USE [master]
+GO
 
-create table peliculas(
-ID int primary key identity (1,1),
-Titulo varchar (50),
-Duracion time,
-Reparto varchar (max),
-FechaDeEstreno date,
-Idioma varchar (50),
-Clasificacion varchar (10),
-Sinopsis varchar (max),
-Genero varchar (50))
+/****** Object:  Database [RedFlixII]    Script Date: 31/5/2026 19:03:00 ******/
+CREATE DATABASE [RedFlixII]
+ CONTAINMENT = NONE
+ ON  PRIMARY 
+( NAME = N'RedFlixII', FILENAME = N'C:\Users\1507f\RedFlixII.mdf' , SIZE = 8192KB , MAXSIZE = UNLIMITED, FILEGROWTH = 65536KB )
+ LOG ON 
+( NAME = N'RedFlixII_log', FILENAME = N'C:\Users\1507f\RedFlixII_log.ldf' , SIZE = 8192KB , MAXSIZE = 2048GB , FILEGROWTH = 65536KB )
+ WITH CATALOG_COLLATION = DATABASE_DEFAULT, LEDGER = OFF
+GO
 
-create table series(
-ID int primary key identity (1,1),
-Titulo varchar (50),
-CantidadCapitulos int,
-Reparto varchar (max),
-FechaDeEstreno date,
-Idioma varchar (50),
-Clasificacion varchar (10),
-Sinopsis varchar (max),
-Genero varchar (50)
-)
+IF (1 = FULLTEXTSERVICEPROPERTY('IsFullTextInstalled'))
+begin
+EXEC [RedFlixII].[dbo].[sp_fulltext_database] @action = 'enable'
+end
+GO
 
-create table usuarios(
-ID int primary key identity (1,1),
-Nombre varchar (50),
-Mail varchar (50),
-Rol varchar (50),
-RolID int,
-constraint fk_rol_usuario
-foreign key (RolID)
-references roles(ID)
-)
+ALTER DATABASE [RedFlixII] SET ANSI_NULL_DEFAULT OFF 
+GO
 
-create table Roles(
-ID int primary key identity(1,1),
-Nombre varchar(50),
-)
+ALTER DATABASE [RedFlixII] SET ANSI_NULLS OFF 
+GO
 
-create table perfiles(
-ID int primary key identity(1,1),
-Nombre varchar (50),
-Icono varchar(max)
-)
-create table listas(
-ID int identity (1,1) primary key,
-nombre varchar (50)
-)
+ALTER DATABASE [RedFlixII] SET ANSI_PADDING OFF 
+GO
 
+ALTER DATABASE [RedFlixII] SET ANSI_WARNINGS OFF 
+GO
 
-create table permisos(
-ID int primary key identity(1,1),
-Nombre varchar(50)
-)
+ALTER DATABASE [RedFlixII] SET ARITHABORT OFF 
+GO
 
-create table rolesPermisos(
-RolID int,
-PermisoID int,
-primary key (rolID, permisoID),
-constraint fk_rol_permiso
-foreign key (rolID)
-references roles(ID),
-constraint fk_permiso_rol
-foreign key (permisoID)
-references permisos(ID)
-)
+ALTER DATABASE [RedFlixII] SET AUTO_CLOSE ON 
+GO
 
-create table listasPelis(
-listaID int,
-peliculaID int,
-constraint fk_pelis_listas
-foreign key (peliculaID)
-references peliculas(ID),
-constraint fk_listas_pelis
-foreign key (listaID)
-references listas(ID)
-)
+ALTER DATABASE [RedFlixII] SET AUTO_SHRINK OFF 
+GO
 
-create table listaSeries(
-listaID int,
-serieID int,
-constraint fk_series_listas
-foreign key (serieID) 
-references series(ID),
-constraint fk_listas_series
-foreign key (listaID)
-references listas(ID)
-)
+ALTER DATABASE [RedFlixII] SET AUTO_UPDATE_STATISTICS ON 
+GO
 
+ALTER DATABASE [RedFlixII] SET CURSOR_CLOSE_ON_COMMIT OFF 
+GO
 
-create table clima(
-ID int identity (1,1) primary key,
-fecha datetime,
-temperatura int,
-descripcionClima varchar(max),
-icono varchar (max)
-)
+ALTER DATABASE [RedFlixII] SET CURSOR_DEFAULT  GLOBAL 
+GO
 
-create table cotizaciones(
-ID int identity (1,1),
-tipoMoneda varchar(50),
-valor decimal (18,0),
-fecha date
-)
-                                                                              
+ALTER DATABASE [RedFlixII] SET CONCAT_NULL_YIELDS_NULL OFF 
+GO
 
+ALTER DATABASE [RedFlixII] SET NUMERIC_ROUNDABORT OFF 
+GO
 
+ALTER DATABASE [RedFlixII] SET QUOTED_IDENTIFIER OFF 
+GO
 
+ALTER DATABASE [RedFlixII] SET RECURSIVE_TRIGGERS OFF 
+GO
 
+ALTER DATABASE [RedFlixII] SET  ENABLE_BROKER 
+GO
+
+ALTER DATABASE [RedFlixII] SET AUTO_UPDATE_STATISTICS_ASYNC OFF 
+GO
+
+ALTER DATABASE [RedFlixII] SET DATE_CORRELATION_OPTIMIZATION OFF 
+GO
+
+ALTER DATABASE [RedFlixII] SET TRUSTWORTHY OFF 
+GO
+
+ALTER DATABASE [RedFlixII] SET ALLOW_SNAPSHOT_ISOLATION OFF 
+GO
+
+ALTER DATABASE [RedFlixII] SET PARAMETERIZATION SIMPLE 
+GO
+
+ALTER DATABASE [RedFlixII] SET READ_COMMITTED_SNAPSHOT OFF 
+GO
+
+ALTER DATABASE [RedFlixII] SET HONOR_BROKER_PRIORITY OFF 
+GO
+
+ALTER DATABASE [RedFlixII] SET RECOVERY SIMPLE 
+GO
+
+ALTER DATABASE [RedFlixII] SET  MULTI_USER 
+GO
+
+ALTER DATABASE [RedFlixII] SET PAGE_VERIFY CHECKSUM  
+GO
+
+ALTER DATABASE [RedFlixII] SET DB_CHAINING OFF 
+GO
+
+ALTER DATABASE [RedFlixII] SET FILESTREAM( NON_TRANSACTED_ACCESS = OFF ) 
+GO
+
+ALTER DATABASE [RedFlixII] SET TARGET_RECOVERY_TIME = 60 SECONDS 
+GO
+
+ALTER DATABASE [RedFlixII] SET DELAYED_DURABILITY = DISABLED 
+GO
+
+ALTER DATABASE [RedFlixII] SET ACCELERATED_DATABASE_RECOVERY = OFF  
+GO
+
+ALTER DATABASE [RedFlixII] SET QUERY_STORE = ON
+GO
+
+ALTER DATABASE [RedFlixII] SET QUERY_STORE (OPERATION_MODE = READ_WRITE, CLEANUP_POLICY = (STALE_QUERY_THRESHOLD_DAYS = 30), DATA_FLUSH_INTERVAL_SECONDS = 900, INTERVAL_LENGTH_MINUTES = 60, MAX_STORAGE_SIZE_MB = 1000, QUERY_CAPTURE_MODE = AUTO, SIZE_BASED_CLEANUP_MODE = AUTO, MAX_PLANS_PER_QUERY = 200, WAIT_STATS_CAPTURE_MODE = ON)
+GO
+
+ALTER DATABASE [RedFlixII] SET  READ_WRITE 
+GO
 
