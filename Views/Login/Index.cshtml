@@ -15,7 +15,7 @@
     }
 </style>
 
-<form method= "post">
+<form method="post">
     <div>
         <label>Email</label><br />
         <input type="email" name="email" required />
@@ -29,4 +29,9 @@
     <button onclick="location.href='@Url.Action("Create", "Usuarios")'">
         Crear Usuario
     </button>
+
+    @if (ViewBag.Error != null)
+    {
+        <p style="color:red">@ViewBag.Error</p>
+    }
 </form>
