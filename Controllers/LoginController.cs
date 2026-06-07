@@ -45,8 +45,16 @@ namespace RedFlix.Controllers
             }
             else
             {
-                
+                ViewBag.Error = "Email o contraseña incorrectos";
+                return View();
             }
+        }
+
+        //Logout
+            public ActionResult Logout()
+        {
+            Session.Clear();
+            return RedirectToAction("index");
         }
 
         // GET: Login/Edit/5
