@@ -1,0 +1,51 @@
+﻿@model IEnumerable<RedFlix.clima>
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Index</h2>
+
+<p>
+    @Html.ActionLink("Create New", "Create")
+</p>
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.fecha)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.temperatura)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.descripcionClima)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.icono)
+        </th>
+        <th></th>
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+        <td>
+            @Html.DisplayFor(modelItem => item.fecha)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.temperatura)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.descripcionClima)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.icono)
+        </td>
+        <td>
+            @Html.ActionLink("Edit", "Edit", new { id=item.ID }) |
+            @Html.ActionLink("Details", "Details", new { id=item.ID }) |
+            @Html.ActionLink("Delete", "Delete", new { id=item.ID })
+        </td>
+    </tr>
+}
+
+</table>

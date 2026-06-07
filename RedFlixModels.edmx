@@ -1,0 +1,622 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+      <Schema Namespace="RedFlixIIIModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="calificaciones">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="perfilID" Type="int" Nullable="false" />
+          <Property Name="tmdbID" Type="int" Nullable="false" />
+          <Property Name="tipo" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="puntaje" Type="int" Nullable="false" />
+          <Property Name="fechaCalificacion" Type="datetime" Nullable="false" />
+        </EntityType>
+        <EntityType Name="clima">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="fecha" Type="datetime" Nullable="false" />
+          <Property Name="temperatura" Type="int" Nullable="false" />
+          <Property Name="descripcionClima" Type="varchar(max)" Nullable="false" />
+          <Property Name="icono" Type="varchar(max)" />
+        </EntityType>
+        <!--Errores durante la generación:
+advertencia 6002: La tabla o vista 'RedFlixIII.dbo.cotizaciones' no tiene definida ninguna clave principal. Se ha inferido la clave y la definición se creado como una vista o tabla de solo lectura.-->
+        <EntityType Name="cotizaciones">
+          <Key>
+            <PropertyRef Name="ID" />
+            <PropertyRef Name="tipoMoneda" />
+            <PropertyRef Name="valor" />
+            <PropertyRef Name="fecha" />
+          </Key>
+          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="tipoMoneda" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="valor" Type="decimal" Precision="18" Scale="4" Nullable="false" />
+          <Property Name="fecha" Type="date" Nullable="false" />
+        </EntityType>
+        <EntityType Name="favoritos">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="perfilID" Type="int" Nullable="false" />
+          <Property Name="tmdbID" Type="int" Nullable="false" />
+          <Property Name="tipo" Type="varchar" MaxLength="50" Nullable="false" />
+        </EntityType>
+        <EntityType Name="listaContenido">
+          <Key>
+            <PropertyRef Name="listaID" />
+            <PropertyRef Name="tmdbID" />
+            <PropertyRef Name="tipo" />
+          </Key>
+          <Property Name="listaID" Type="int" Nullable="false" />
+          <Property Name="tmdbID" Type="int" Nullable="false" />
+          <Property Name="tipo" Type="varchar" MaxLength="50" Nullable="false" />
+        </EntityType>
+        <EntityType Name="listas">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="nombre" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="perfilID" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="perfiles">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Nombre" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="Icono" Type="varchar(max)" />
+          <Property Name="usuarioID" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="permisos">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Nombre" Type="varchar" MaxLength="50" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Roles">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Nombre" Type="varchar" MaxLength="50" Nullable="false" />
+        </EntityType>
+        <EntityType Name="rolesPermisos">
+          <Key>
+            <PropertyRef Name="RolID" />
+            <PropertyRef Name="PermisoID" />
+          </Key>
+          <Property Name="RolID" Type="int" Nullable="false" />
+          <Property Name="PermisoID" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="usuarios">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Nombre" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="Mail" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="RolID" Type="int" Nullable="false" />
+          <Property Name="Contrasena" Type="varchar" MaxLength="255" Nullable="false" />
+        </EntityType>
+        <Association Name="fk_listaCont_listas">
+          <End Role="listas" Type="Self.listas" Multiplicity="1" />
+          <End Role="listaContenido" Type="Self.listaContenido" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="listas">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="listaContenido">
+              <PropertyRef Name="listaID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="fk_listas_usuario">
+          <End Role="perfiles" Type="Self.perfiles" Multiplicity="1" />
+          <End Role="listas" Type="Self.listas" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="perfiles">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="listas">
+              <PropertyRef Name="perfilID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="fk_perfil_calificaciones">
+          <End Role="perfiles" Type="Self.perfiles" Multiplicity="1" />
+          <End Role="calificaciones" Type="Self.calificaciones" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="perfiles">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="calificaciones">
+              <PropertyRef Name="perfilID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="fk_perfil_favoritos">
+          <End Role="perfiles" Type="Self.perfiles" Multiplicity="1" />
+          <End Role="favoritos" Type="Self.favoritos" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="perfiles">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="favoritos">
+              <PropertyRef Name="perfilID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="fk_perfil_usuario">
+          <End Role="usuarios" Type="Self.usuarios" Multiplicity="1" />
+          <End Role="perfiles" Type="Self.perfiles" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="usuarios">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="perfiles">
+              <PropertyRef Name="usuarioID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="fk_permiso_rol">
+          <End Role="permisos" Type="Self.permisos" Multiplicity="1" />
+          <End Role="rolesPermisos" Type="Self.rolesPermisos" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="permisos">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="rolesPermisos">
+              <PropertyRef Name="PermisoID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="fk_rol_permiso">
+          <End Role="Roles" Type="Self.Roles" Multiplicity="1" />
+          <End Role="rolesPermisos" Type="Self.rolesPermisos" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Roles">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="rolesPermisos">
+              <PropertyRef Name="RolID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="fk_rol_usuario">
+          <End Role="Roles" Type="Self.Roles" Multiplicity="1" />
+          <End Role="usuarios" Type="Self.usuarios" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Roles">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="usuarios">
+              <PropertyRef Name="RolID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="RedFlixIIIModelStoreContainer">
+          <EntitySet Name="calificaciones" EntityType="Self.calificaciones" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="clima" EntityType="Self.clima" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="favoritos" EntityType="Self.favoritos" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="listaContenido" EntityType="Self.listaContenido" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="listas" EntityType="Self.listas" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="perfiles" EntityType="Self.perfiles" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="permisos" EntityType="Self.permisos" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Roles" EntityType="Self.Roles" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="rolesPermisos" EntityType="Self.rolesPermisos" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="usuarios" EntityType="Self.usuarios" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="cotizaciones" EntityType="Self.cotizaciones" store:Type="Tables" store:Schema="dbo">
+            <DefiningQuery>SELECT 
+    [cotizaciones].[ID] AS [ID], 
+    [cotizaciones].[tipoMoneda] AS [tipoMoneda], 
+    [cotizaciones].[valor] AS [valor], 
+    [cotizaciones].[fecha] AS [fecha]
+    FROM [dbo].[cotizaciones] AS [cotizaciones]</DefiningQuery>
+          </EntitySet>
+          <AssociationSet Name="fk_listaCont_listas" Association="Self.fk_listaCont_listas">
+            <End Role="listas" EntitySet="listas" />
+            <End Role="listaContenido" EntitySet="listaContenido" />
+          </AssociationSet>
+          <AssociationSet Name="fk_listas_usuario" Association="Self.fk_listas_usuario">
+            <End Role="perfiles" EntitySet="perfiles" />
+            <End Role="listas" EntitySet="listas" />
+          </AssociationSet>
+          <AssociationSet Name="fk_perfil_calificaciones" Association="Self.fk_perfil_calificaciones">
+            <End Role="perfiles" EntitySet="perfiles" />
+            <End Role="calificaciones" EntitySet="calificaciones" />
+          </AssociationSet>
+          <AssociationSet Name="fk_perfil_favoritos" Association="Self.fk_perfil_favoritos">
+            <End Role="perfiles" EntitySet="perfiles" />
+            <End Role="favoritos" EntitySet="favoritos" />
+          </AssociationSet>
+          <AssociationSet Name="fk_perfil_usuario" Association="Self.fk_perfil_usuario">
+            <End Role="usuarios" EntitySet="usuarios" />
+            <End Role="perfiles" EntitySet="perfiles" />
+          </AssociationSet>
+          <AssociationSet Name="fk_permiso_rol" Association="Self.fk_permiso_rol">
+            <End Role="permisos" EntitySet="permisos" />
+            <End Role="rolesPermisos" EntitySet="rolesPermisos" />
+          </AssociationSet>
+          <AssociationSet Name="fk_rol_permiso" Association="Self.fk_rol_permiso">
+            <End Role="Roles" EntitySet="Roles" />
+            <End Role="rolesPermisos" EntitySet="rolesPermisos" />
+          </AssociationSet>
+          <AssociationSet Name="fk_rol_usuario" Association="Self.fk_rol_usuario">
+            <End Role="Roles" EntitySet="Roles" />
+            <End Role="usuarios" EntitySet="usuarios" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema>
+    </edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="RedFlixIIIModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityType Name="calificaciones">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="perfilID" Type="Int32" Nullable="false" />
+          <Property Name="tmdbID" Type="Int32" Nullable="false" />
+          <Property Name="tipo" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="puntaje" Type="Int32" Nullable="false" />
+          <Property Name="fechaCalificacion" Type="DateTime" Nullable="false" Precision="3" />
+          <NavigationProperty Name="perfiles" Relationship="Self.fk_perfil_calificaciones" FromRole="calificaciones" ToRole="perfiles" />
+        </EntityType>
+        <EntityType Name="clima">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="fecha" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="temperatura" Type="Int32" Nullable="false" />
+          <Property Name="descripcionClima" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="icono" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+        </EntityType>
+        <EntityType Name="favoritos">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="perfilID" Type="Int32" Nullable="false" />
+          <Property Name="tmdbID" Type="Int32" Nullable="false" />
+          <Property Name="tipo" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+          <NavigationProperty Name="perfiles" Relationship="Self.fk_perfil_favoritos" FromRole="favoritos" ToRole="perfiles" />
+        </EntityType>
+        <EntityType Name="listaContenido">
+          <Key>
+            <PropertyRef Name="listaID" />
+            <PropertyRef Name="tmdbID" />
+            <PropertyRef Name="tipo" />
+          </Key>
+          <Property Name="listaID" Type="Int32" Nullable="false" />
+          <Property Name="tmdbID" Type="Int32" Nullable="false" />
+          <Property Name="tipo" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+          <NavigationProperty Name="listas" Relationship="Self.fk_listaCont_listas" FromRole="listaContenido" ToRole="listas" />
+        </EntityType>
+        <EntityType Name="listas">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="nombre" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="perfilID" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="listaContenido" Relationship="Self.fk_listaCont_listas" FromRole="listas" ToRole="listaContenido" />
+          <NavigationProperty Name="perfiles" Relationship="Self.fk_listas_usuario" FromRole="listas" ToRole="perfiles" />
+        </EntityType>
+        <EntityType Name="perfiles">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Nombre" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="Icono" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="usuarioID" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="calificaciones" Relationship="Self.fk_perfil_calificaciones" FromRole="perfiles" ToRole="calificaciones" />
+          <NavigationProperty Name="favoritos" Relationship="Self.fk_perfil_favoritos" FromRole="perfiles" ToRole="favoritos" />
+          <NavigationProperty Name="listas" Relationship="Self.fk_listas_usuario" FromRole="perfiles" ToRole="listas" />
+          <NavigationProperty Name="usuarios" Relationship="Self.fk_perfil_usuario" FromRole="perfiles" ToRole="usuarios" />
+        </EntityType>
+        <EntityType Name="permisos">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Nombre" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+          <NavigationProperty Name="Roles" Relationship="Self.rolesPermisos" FromRole="permisos" ToRole="Roles" />
+        </EntityType>
+        <EntityType Name="Roles">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Nombre" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+          <NavigationProperty Name="usuarios" Relationship="Self.fk_rol_usuario" FromRole="Roles" ToRole="usuarios" />
+          <NavigationProperty Name="permisos" Relationship="Self.rolesPermisos" FromRole="Roles" ToRole="permisos" />
+        </EntityType>
+        <EntityType Name="usuarios">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Nombre" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="Mail" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="RolID" Type="Int32" Nullable="false" />
+          <Property Name="Contrasena" Type="String" MaxLength="255" FixedLength="false" Unicode="false" Nullable="false" />
+          <NavigationProperty Name="perfiles" Relationship="Self.fk_perfil_usuario" FromRole="usuarios" ToRole="perfiles" />
+          <NavigationProperty Name="Roles" Relationship="Self.fk_rol_usuario" FromRole="usuarios" ToRole="Roles" />
+        </EntityType>
+        <EntityType Name="cotizaciones">
+          <Key>
+            <PropertyRef Name="ID" />
+            <PropertyRef Name="tipoMoneda" />
+            <PropertyRef Name="valor" />
+            <PropertyRef Name="fecha" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="tipoMoneda" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="valor" Type="Decimal" Precision="18" Scale="4" Nullable="false" />
+          <Property Name="fecha" Type="DateTime" Nullable="false" Precision="0" />
+        </EntityType>
+        <Association Name="fk_perfil_calificaciones">
+          <End Role="perfiles" Type="Self.perfiles" Multiplicity="1" />
+          <End Role="calificaciones" Type="Self.calificaciones" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="perfiles">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="calificaciones">
+              <PropertyRef Name="perfilID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="fk_perfil_favoritos">
+          <End Role="perfiles" Type="Self.perfiles" Multiplicity="1" />
+          <End Role="favoritos" Type="Self.favoritos" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="perfiles">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="favoritos">
+              <PropertyRef Name="perfilID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="fk_listaCont_listas">
+          <End Role="listas" Type="Self.listas" Multiplicity="1" />
+          <End Role="listaContenido" Type="Self.listaContenido" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="listas">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="listaContenido">
+              <PropertyRef Name="listaID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="fk_listas_usuario">
+          <End Role="perfiles" Type="Self.perfiles" Multiplicity="1" />
+          <End Role="listas" Type="Self.listas" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="perfiles">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="listas">
+              <PropertyRef Name="perfilID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="fk_perfil_usuario">
+          <End Role="usuarios" Type="Self.usuarios" Multiplicity="1" />
+          <End Role="perfiles" Type="Self.perfiles" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="usuarios">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="perfiles">
+              <PropertyRef Name="usuarioID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="fk_rol_usuario">
+          <End Role="Roles" Type="Self.Roles" Multiplicity="1" />
+          <End Role="usuarios" Type="Self.usuarios" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Roles">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="usuarios">
+              <PropertyRef Name="RolID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="rolesPermisos">
+          <End Role="permisos" Type="Self.permisos" Multiplicity="*" />
+          <End Role="Roles" Type="Self.Roles" Multiplicity="*" />
+        </Association>
+        <EntityContainer Name="RedFlixIIIEntities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="calificaciones" EntityType="Self.calificaciones" />
+          <EntitySet Name="clima" EntityType="Self.clima" />
+          <EntitySet Name="favoritos" EntityType="Self.favoritos" />
+          <EntitySet Name="listaContenido" EntityType="Self.listaContenido" />
+          <EntitySet Name="listas" EntityType="Self.listas" />
+          <EntitySet Name="perfiles" EntityType="Self.perfiles" />
+          <EntitySet Name="permisos" EntityType="Self.permisos" />
+          <EntitySet Name="Roles" EntityType="Self.Roles" />
+          <EntitySet Name="usuarios" EntityType="Self.usuarios" />
+          <EntitySet Name="cotizaciones" EntityType="Self.cotizaciones" />
+          <AssociationSet Name="fk_perfil_calificaciones" Association="Self.fk_perfil_calificaciones">
+            <End Role="perfiles" EntitySet="perfiles" />
+            <End Role="calificaciones" EntitySet="calificaciones" />
+          </AssociationSet>
+          <AssociationSet Name="fk_perfil_favoritos" Association="Self.fk_perfil_favoritos">
+            <End Role="perfiles" EntitySet="perfiles" />
+            <End Role="favoritos" EntitySet="favoritos" />
+          </AssociationSet>
+          <AssociationSet Name="fk_listaCont_listas" Association="Self.fk_listaCont_listas">
+            <End Role="listas" EntitySet="listas" />
+            <End Role="listaContenido" EntitySet="listaContenido" />
+          </AssociationSet>
+          <AssociationSet Name="fk_listas_usuario" Association="Self.fk_listas_usuario">
+            <End Role="perfiles" EntitySet="perfiles" />
+            <End Role="listas" EntitySet="listas" />
+          </AssociationSet>
+          <AssociationSet Name="fk_perfil_usuario" Association="Self.fk_perfil_usuario">
+            <End Role="usuarios" EntitySet="usuarios" />
+            <End Role="perfiles" EntitySet="perfiles" />
+          </AssociationSet>
+          <AssociationSet Name="fk_rol_usuario" Association="Self.fk_rol_usuario">
+            <End Role="Roles" EntitySet="Roles" />
+            <End Role="usuarios" EntitySet="usuarios" />
+          </AssociationSet>
+          <AssociationSet Name="rolesPermisos" Association="Self.rolesPermisos">
+            <End Role="permisos" EntitySet="permisos" />
+            <End Role="Roles" EntitySet="Roles" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="RedFlixIIIModelStoreContainer" CdmEntityContainer="RedFlixIIIEntities">
+          <EntitySetMapping Name="calificaciones">
+            <EntityTypeMapping TypeName="RedFlixIIIModel.calificaciones">
+              <MappingFragment StoreEntitySet="calificaciones">
+                <ScalarProperty Name="ID" ColumnName="ID" />
+                <ScalarProperty Name="perfilID" ColumnName="perfilID" />
+                <ScalarProperty Name="tmdbID" ColumnName="tmdbID" />
+                <ScalarProperty Name="tipo" ColumnName="tipo" />
+                <ScalarProperty Name="puntaje" ColumnName="puntaje" />
+                <ScalarProperty Name="fechaCalificacion" ColumnName="fechaCalificacion" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="clima">
+            <EntityTypeMapping TypeName="RedFlixIIIModel.clima">
+              <MappingFragment StoreEntitySet="clima">
+                <ScalarProperty Name="ID" ColumnName="ID" />
+                <ScalarProperty Name="fecha" ColumnName="fecha" />
+                <ScalarProperty Name="temperatura" ColumnName="temperatura" />
+                <ScalarProperty Name="descripcionClima" ColumnName="descripcionClima" />
+                <ScalarProperty Name="icono" ColumnName="icono" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="favoritos">
+            <EntityTypeMapping TypeName="RedFlixIIIModel.favoritos">
+              <MappingFragment StoreEntitySet="favoritos">
+                <ScalarProperty Name="ID" ColumnName="ID" />
+                <ScalarProperty Name="perfilID" ColumnName="perfilID" />
+                <ScalarProperty Name="tmdbID" ColumnName="tmdbID" />
+                <ScalarProperty Name="tipo" ColumnName="tipo" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="listaContenido">
+            <EntityTypeMapping TypeName="RedFlixIIIModel.listaContenido">
+              <MappingFragment StoreEntitySet="listaContenido">
+                <ScalarProperty Name="listaID" ColumnName="listaID" />
+                <ScalarProperty Name="tmdbID" ColumnName="tmdbID" />
+                <ScalarProperty Name="tipo" ColumnName="tipo" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="listas">
+            <EntityTypeMapping TypeName="RedFlixIIIModel.listas">
+              <MappingFragment StoreEntitySet="listas">
+                <ScalarProperty Name="ID" ColumnName="ID" />
+                <ScalarProperty Name="nombre" ColumnName="nombre" />
+                <ScalarProperty Name="perfilID" ColumnName="perfilID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="perfiles">
+            <EntityTypeMapping TypeName="RedFlixIIIModel.perfiles">
+              <MappingFragment StoreEntitySet="perfiles">
+                <ScalarProperty Name="ID" ColumnName="ID" />
+                <ScalarProperty Name="Nombre" ColumnName="Nombre" />
+                <ScalarProperty Name="Icono" ColumnName="Icono" />
+                <ScalarProperty Name="usuarioID" ColumnName="usuarioID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="permisos">
+            <EntityTypeMapping TypeName="RedFlixIIIModel.permisos">
+              <MappingFragment StoreEntitySet="permisos">
+                <ScalarProperty Name="ID" ColumnName="ID" />
+                <ScalarProperty Name="Nombre" ColumnName="Nombre" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Roles">
+            <EntityTypeMapping TypeName="RedFlixIIIModel.Roles">
+              <MappingFragment StoreEntitySet="Roles">
+                <ScalarProperty Name="ID" ColumnName="ID" />
+                <ScalarProperty Name="Nombre" ColumnName="Nombre" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="usuarios">
+            <EntityTypeMapping TypeName="RedFlixIIIModel.usuarios">
+              <MappingFragment StoreEntitySet="usuarios">
+                <ScalarProperty Name="ID" ColumnName="ID" />
+                <ScalarProperty Name="Nombre" ColumnName="Nombre" />
+                <ScalarProperty Name="Mail" ColumnName="Mail" />
+                <ScalarProperty Name="RolID" ColumnName="RolID" />
+                <ScalarProperty Name="Contrasena" ColumnName="Contrasena" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="cotizaciones">
+            <EntityTypeMapping TypeName="RedFlixIIIModel.cotizaciones">
+              <MappingFragment StoreEntitySet="cotizaciones">
+                <ScalarProperty Name="ID" ColumnName="ID" />
+                <ScalarProperty Name="tipoMoneda" ColumnName="tipoMoneda" />
+                <ScalarProperty Name="valor" ColumnName="valor" />
+                <ScalarProperty Name="fecha" ColumnName="fecha" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <AssociationSetMapping Name="rolesPermisos" TypeName="RedFlixIIIModel.rolesPermisos" StoreEntitySet="rolesPermisos">
+            <EndProperty Name="permisos">
+              <ScalarProperty Name="ID" ColumnName="PermisoID" />
+            </EndProperty>
+            <EndProperty Name="Roles">
+              <ScalarProperty Name="ID" ColumnName="RolID" />
+            </EndProperty>
+          </AssociationSetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="false" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="Ninguno" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>

@@ -1,0 +1,32 @@
+﻿
+@{
+    ViewBag.Title = "Login";
+}
+
+<h2>Login</h2>
+<style>
+    body {
+        background-color: #000;
+        color: white;
+    }
+
+    input {
+        color: black;
+    }
+</style>
+
+<form method= "post">
+    <div>
+        <label>Email</label><br />
+        <input type="email" name="email" required />
+    </div>
+    <div>
+        <label>Contraseña</label><br />
+        <input type="password" name="contrasenia" required />
+    </div>
+    <br />
+    <button type="submit">Ingresar</button>
+    <button onclick="location.href='@Url.Action("Create", "Usuarios")'">
+        Crear Usuario
+    </button>
+</form>

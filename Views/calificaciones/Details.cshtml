@@ -1,0 +1,58 @@
+﻿@model RedFlix.calificaciones
+
+@{
+    ViewBag.Title = "Details";
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>calificaciones</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.tmdbID)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.tmdbID)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.tipo)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.tipo)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.puntaje)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.puntaje)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.fechaCalificacion)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.fechaCalificacion)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.perfiles.Nombre)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.perfiles.Nombre)
+        </dd>
+
+    </dl>
+</div>
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id = Model.ID }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>
