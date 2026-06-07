@@ -126,6 +126,7 @@
     <Compile Include="clima.cs">
       <DependentUpon>RedFlixModels.tt</DependentUpon>
     </Compile>
+    <Compile Include="Controllers\AdminController.cs" />
     <Compile Include="Controllers\calificacionesController.cs" />
     <Compile Include="Controllers\climasController.cs" />
     <Compile Include="Controllers\cotizacionesController.cs" />
@@ -134,9 +135,11 @@
     <Compile Include="Controllers\listaContenidoesController.cs" />
     <Compile Include="Controllers\listasController.cs" />
     <Compile Include="Controllers\LoginController.cs" />
+    <Compile Include="Controllers\PeliculasController.cs" />
     <Compile Include="Controllers\perfilesController.cs" />
     <Compile Include="Controllers\permisosController.cs" />
     <Compile Include="Controllers\RolesController.cs" />
+    <Compile Include="Controllers\SeriesController.cs" />
     <Compile Include="Controllers\usuariosController.cs" />
     <Compile Include="cotizaciones.cs">
       <DependentUpon>RedFlixModels.tt</DependentUpon>
@@ -178,6 +181,7 @@
     <Compile Include="Roles.cs">
       <DependentUpon>RedFlixModels.tt</DependentUpon>
     </Compile>
+    <Compile Include="Services\TMDBService.cs" />
     <Compile Include="usuarios.cs">
       <DependentUpon>RedFlixModels.tt</DependentUpon>
     </Compile>
@@ -301,10 +305,13 @@
     <Content Include="Views\usuarios\Edit.cshtml" />
     <Content Include="Views\usuarios\Index.cshtml" />
     <Content Include="Views\Login\Index.cshtml" />
+    <Content Include="Views\Series\Index.cshtml" />
+    <Content Include="Views\Peliculas\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Models\" />
+    <Folder Include="Views\Admin\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap.rtl.min.css.map" />
