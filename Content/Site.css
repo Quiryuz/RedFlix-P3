@@ -837,6 +837,54 @@ textarea {
     gap: 1.25rem;
 }
 
+.profile-selection-page {
+    min-height: calc(100vh - 68px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 2rem;
+}
+
+.profile-selection-page h1 {
+    font-size: 2.25rem;
+    font-weight: 500;
+    margin-bottom: 2.5rem;
+    color: #f5f5f5;
+}
+
+.profile-selection-grid {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 2rem;
+    flex-wrap: wrap;
+}
+
+.profile-selection-item {
+    color: #b3b3b3;
+    text-decoration: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.85rem;
+    transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.profile-selection-item:hover {
+    color: #fff;
+    transform: translateY(-3px);
+}
+
+.profile-selection-item:hover .profile-avatar {
+    border-color: #f5f5f5;
+}
+
+.profile-selection-item span {
+    font-size: 1.05rem;
+}
+
 .profile-card {
     background: #141414;
     border: 1px solid #2a2a2a;
