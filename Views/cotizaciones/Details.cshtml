@@ -1,18 +1,21 @@
-﻿@model RedFlix.cotizaciones
+@model RedFlix.cotizaciones
 
 @{
     ViewBag.Title = "Details";
 }
 
-<h2>Details</h2>
+@{ ViewBag.ModuleTitle = "Detalle"; ViewBag.ModuleSubtitle = "Historial de tipos de cambio"; ViewBag.ShowCreate = false; }
 
+@Html.Partial("_ModuleHeader")
+
+<div class="module-card">
 <div>
-    <h4>cotizaciones</h4>
     <hr />
-    <dl class="dl-horizontal">
+    <dl class="dl-horizontal module-details">
     </dl>
 </div>
-<p>
-    @Html.ActionLink("Edit", "Edit", new { /* id = Model.PrimaryKey */ }) |
-    @Html.ActionLink("Back to List", "Index")
-</p>
+</div>
+<div class="module-footer-links">
+    @Html.ActionLink("Editar", "Edit", new { id = Model.ID }, new { @class = "btn btn-outline-light btn-sm" })
+    @Html.ActionLink("Volver al listado", "Index", null, new { @class = "module-back-link" })
+</div>

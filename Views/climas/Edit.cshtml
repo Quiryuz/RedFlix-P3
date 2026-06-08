@@ -1,18 +1,19 @@
-﻿@model RedFlix.clima
+@model RedFlix.clima
 
 @{
     ViewBag.Title = "Edit";
 }
 
-<h2>Edit</h2>
+@{ ViewBag.ModuleTitle = "Editar"; ViewBag.ModuleSubtitle = "Registros de informacion climatica"; ViewBag.ShowCreate = false; }
 
+@Html.Partial("_ModuleHeader")
 
+<div class="module-card">
 @using (Html.BeginForm())
 {
     @Html.AntiForgeryToken()
     
-    <div class="form-horizontal">
-        <h4>clima</h4>
+    <div class="form-horizontal module-form">
         <hr />
         @Html.ValidationSummary(true, "", new { @class = "text-danger" })
         @Html.HiddenFor(model => model.ID)
@@ -51,16 +52,16 @@
 
         <div class="form-group">
             <div class="col-md-offset-2 col-md-10">
-                <input type="submit" value="Save" class="btn btn-default" />
+                <input type="submit" value="Save" class="btn btn-danger" />
             </div>
         </div>
     </div>
 }
 
-<div>
-    @Html.ActionLink("Back to List", "Index")
-</div>
-
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
 }
+</div>
+<div class="module-footer-links">
+    @Html.ActionLink("Volver al listado", "Index", null, new { @class = "module-back-link" })
+</div>

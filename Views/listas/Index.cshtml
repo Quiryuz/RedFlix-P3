@@ -1,15 +1,16 @@
-﻿@model IEnumerable<RedFlix.listas>
+@model IEnumerable<RedFlix.listas>
 
 @{
     ViewBag.Title = "Index";
 }
 
-<h2>Index</h2>
+@{ ViewBag.ModuleTitle = "Listas"; ViewBag.ModuleSubtitle = "Listas personalizadas"; ViewBag.CreateText = "Nueva lista"; }
 
-<p>
-    @Html.ActionLink("Create New", "Create")
-</p>
-<table class="table">
+@Html.Partial("_ModuleHeader")
+
+<div class="module-card module-card-table">
+    <div class="table-responsive">
+<table class="table module-table">
     <tr>
         <th>
             @Html.DisplayNameFor(model => model.nombre)
@@ -29,11 +30,14 @@
             @Html.DisplayFor(modelItem => item.perfiles.Nombre)
         </td>
         <td>
-            @Html.ActionLink("Edit", "Edit", new { id=item.ID }) |
-            @Html.ActionLink("Details", "Details", new { id=item.ID }) |
-            @Html.ActionLink("Delete", "Delete", new { id=item.ID })
+            @Html.ActionLink("Editar", "Edit", new { id=item.ID }) |
+            @Html.ActionLink("Detalle", "Details", new { id=item.ID }) |
+            @Html.ActionLink("Eliminar", "Delete", new { id=item.ID })
         </td>
     </tr>
 }
 
 </table>
+    </div>
+</div>
+

@@ -9,9 +9,9 @@
     @Scripts.Render("~/bundles/modernizr")
 </head>
 <body>
-    <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark bg-dark">
+    <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark navbar-redflix">
 
-        <div class="container">
+        <div class="container-fluid px-4">
             @Html.ActionLink("RedFlix", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })
 
             <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" title="Alternar navegación" aria-controls="navbarSupportedContent"
@@ -36,28 +36,18 @@
                                 Administración
                             </a>
 
-                            <ul class="dropdown-menu">
-                                <li>
-                                    @Html.ActionLink("Usuarios", "Index", "Usuarios", null,
-                                        new { @class = "dropdown-item" })
-                                </li>
-
-                                <li>
-                                    @Html.ActionLink("Roles", "Index", "Roles", null,
-                                        new { @class = "dropdown-item" })
-                                </li>
-
-                                <li>
-                                    @Html.ActionLink("Permisos", "Index", "Permisos", null,
-                                        new { @class = "dropdown-item" })
-                                </li>
-
-                                <li><hr class="dropdown-divider"></li>
-
-                                <li>
-                                    @Html.ActionLink("Reportes", "Index", "Reportes", null,
-                                        new { @class = "dropdown-item" })
-                                </li>
+                            <ul class="dropdown-menu dropdown-menu-dark">
+                                <li>@Html.ActionLink("Usuarios", "Index", "Usuarios", null, new { @class = "dropdown-item" })</li>
+                                <li>@Html.ActionLink("Roles", "Index", "Roles", null, new { @class = "dropdown-item" })</li>
+                                <li>@Html.ActionLink("Permisos", "Index", "Permisos", null, new { @class = "dropdown-item" })</li>
+                                <li>@Html.ActionLink("Perfiles", "Index", "Perfiles", null, new { @class = "dropdown-item" })</li>
+                                <li><hr class="dropdown-divider" /></li>
+                                <li>@Html.ActionLink("Favoritos", "Index", "Favoritos", null, new { @class = "dropdown-item" })</li>
+                                <li>@Html.ActionLink("Listas", "Index", "Listas", null, new { @class = "dropdown-item" })</li>
+                                <li>@Html.ActionLink("Calificaciones", "Index", "Calificaciones", null, new { @class = "dropdown-item" })</li>
+                                <li><hr class="dropdown-divider" /></li>
+                                <li>@Html.ActionLink("Clima", "Index", "Climas", null, new { @class = "dropdown-item" })</li>
+                                <li>@Html.ActionLink("Cotizaciones", "Index", "Cotizaciones", null, new { @class = "dropdown-item" })</li>
                             </ul>
                         </li>
                     }
@@ -85,7 +75,20 @@
     </nav>
 
     <div class="body-content">
-        @RenderBody()
+        @{
+            var ctrl = Convert.ToString(ViewContext.RouteData.Values["controller"]);
+            var fullWidthControllers = new[] { "Home", "Peliculas", "Series", "Login" };
+        }
+        @if (fullWidthControllers.Contains(ctrl))
+        {
+            @RenderBody()
+        }
+        else
+        {
+            <section class="module-page">
+                @RenderBody()
+            </section>
+        }
     </div>
 
     <script src="~/Scripts/bootstrap.bundle.min.js"></script>

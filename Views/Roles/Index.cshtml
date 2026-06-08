@@ -1,15 +1,16 @@
-﻿@model IEnumerable<RedFlix.Roles>
+@model IEnumerable<RedFlix.Roles>
 
 @{
     ViewBag.Title = "Index";
 }
 
-<h2>Index</h2>
+@{ ViewBag.ModuleTitle = "Roles"; ViewBag.ModuleSubtitle = "Tipos de usuario del sistema"; ViewBag.CreateText = "Nuevo rol"; }
 
-<p>
-    @Html.ActionLink("Create New", "Create")
-</p>
-<table class="table">
+@Html.Partial("_ModuleHeader")
+
+<div class="module-card module-card-table">
+    <div class="table-responsive">
+<table class="table module-table">
     <tr>
         <th>
             @Html.DisplayNameFor(model => model.Nombre)
@@ -23,11 +24,14 @@
             @Html.DisplayFor(modelItem => item.Nombre)
         </td>
         <td>
-            @Html.ActionLink("Edit", "Edit", new { id=item.ID }) |
-            @Html.ActionLink("Details", "Details", new { id=item.ID }) |
-            @Html.ActionLink("Delete", "Delete", new { id=item.ID })
+            @Html.ActionLink("Editar", "Edit", new { id=item.ID }) |
+            @Html.ActionLink("Detalle", "Details", new { id=item.ID }) |
+            @Html.ActionLink("Eliminar", "Delete", new { id=item.ID })
         </td>
     </tr>
 }
 
 </table>
+    </div>
+</div>
+

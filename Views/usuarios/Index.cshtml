@@ -1,24 +1,16 @@
-﻿@model IEnumerable<RedFlix.usuarios>
+@model IEnumerable<RedFlix.usuarios>
 
 @{
     ViewBag.Title = "Index";
 }
 
-<h2>Index</h2>
-<style>
-    body {
-        background-color: #000;
-        color: white;
-    }
+@{ ViewBag.ModuleTitle = "Usuarios"; ViewBag.ModuleSubtitle = "Gestion de cuentas y accesos"; ViewBag.CreateText = "Nuevo usuario"; }
 
-    input {
-        color: black;
-    }
-</style>
-<p>
-    @Html.ActionLink("Create New", "Create")
-</p>
-<table class="table">
+@Html.Partial("_ModuleHeader")
+
+<div class="module-card module-card-table">
+    <div class="table-responsive">
+<table class="table module-table">
     <tr>
         <th>
             @Html.DisplayNameFor(model => model.Nombre)
@@ -50,11 +42,14 @@
             @Html.DisplayFor(modelItem => item.Roles.Nombre)
         </td>
         <td>
-            @Html.ActionLink("Edit", "Edit", new { id=item.ID }) |
-            @Html.ActionLink("Details", "Details", new { id=item.ID }) |
-            @Html.ActionLink("Delete", "Delete", new { id=item.ID })
+            @Html.ActionLink("Editar", "Edit", new { id=item.ID }) |
+            @Html.ActionLink("Detalle", "Details", new { id=item.ID }) |
+            @Html.ActionLink("Eliminar", "Delete", new { id=item.ID })
         </td>
     </tr>
 }
 
 </table>
+    </div>
+</div>
+

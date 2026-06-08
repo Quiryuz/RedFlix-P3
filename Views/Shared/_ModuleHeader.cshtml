@@ -1,0 +1,19 @@
+@{
+    var title = ViewBag.ModuleTitle ?? ViewBag.Title ?? "Módulo";
+    var subtitle = ViewBag.ModuleSubtitle as string ?? "Administración RedFlix+";
+    var showCreate = ViewBag.ShowCreate == null || (bool)ViewBag.ShowCreate;
+    var createText = ViewBag.CreateText as string ?? "Crear nuevo";
+}
+
+<div class="module-header">
+    <div>
+        <h1 class="module-title">@title</h1>
+        <p class="module-subtitle">@subtitle</p>
+    </div>
+    @if (showCreate)
+    {
+        <div class="module-header-actions">
+            @Html.ActionLink(createText, "Create", null, new { @class = "btn btn-danger btn-sm" })
+        </div>
+    }
+</div>

@@ -1,14 +1,12 @@
-﻿<!DOCTYPE html>
-<html>
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-    <meta name="viewport" content="width=device-width" />
-    <title>Error</title>
-</head>
-<body>
-    <hgroup>
-        <h1>Error.</h1>
-        <h2>Error al procesar la solicitud.</h2>
-    </hgroup>
-</body>
-</html>
+﻿@{
+    ViewBag.Title = "Error";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<section class="error-page">
+    <div class="error-card">
+        <h1>Error</h1>
+        <p class="text-muted">Ocurrió un problema al procesar tu solicitud.</p>
+        @Html.ActionLink("Volver al inicio", "Index", "Home", null, new { @class = "btn btn-danger mt-3" })
+    </div>
+</section>

@@ -1,19 +1,15 @@
 ﻿@{
-    ViewBag.Title = "Contact";
+    ViewBag.Title = "Contacto";
 }
-<main aria-labelledby="title">
-    <h2 id="title">@ViewBag.Title.</h2>
-    <h3>@ViewBag.Message</h3>
 
-    <address>
-        One Microsoft Way<br />
-        Redmond, WA 98052-6399<br />
-        <abbr title="Phone">P:</abbr>
-        425.555.0100
-    </address>
-
-    <address>
-        <strong>Support:</strong>   <a href="mailto:Support@example.com">Support@example.com</a><br />
-        <strong>Marketing:</strong> <a href="mailto:Marketing@example.com">Marketing@example.com</a>
-    </address>
-</main>
+<section class="page-static">
+    <h2>Contacto</h2>
+    <h3 class="text-muted mb-4">@ViewBag.Message</h3>
+    <p>
+        Para consultas sobre el proyecto RedFlix+, comunicate con el equipo de desarrollo
+        a través de los canales indicados por el docente del curso.
+    </p>
+    <p>
+        @Html.ActionLink("Volver al inicio", "Index", "Home", null, new { @class = "btn btn-outline-light btn-sm mt-3" })
+    </p>
+</section>

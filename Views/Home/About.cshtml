@@ -1,9 +1,16 @@
 ﻿@{
-    ViewBag.Title = "About";
+    ViewBag.Title = "Acerca de";
 }
-<main aria-labelledby="title">
-    <h2 id="title">@ViewBag.Title.</h2>
-    <h3>@ViewBag.Message</h3>
 
-    <p>Use this area to provide additional information.</p>
-</main>
+<section class="page-static">
+    <h2>RedFlix+</h2>
+    <h3 class="text-muted mb-4">@ViewBag.Message</h3>
+    <p>
+        RedFlix+ es una plataforma web de streaming desarrollada como proyecto académico.
+        Integra catálogo de películas y series desde TheMovieDB, gestión de usuarios, perfiles,
+        favoritos, listas personalizadas y calificaciones.
+    </p>
+    <p>
+        @Html.ActionLink("Volver al inicio", "Index", "Home", null, new { @class = "btn btn-outline-light btn-sm mt-3" })
+    </p>
+</section>
