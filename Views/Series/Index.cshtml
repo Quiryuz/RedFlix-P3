@@ -1,17 +1,53 @@
-﻿
+﻿@model IEnumerable<RedFlix.Models.Tmdb.TmdbTvResult>
 @{
-    ViewBag.Title = "Series";
+    ViewBag.Title = ViewBag.Titulo ?? "Series";
 }
 
-<style>
-    body {
-        background-color: #000;
-        color: white;
-    }
+<div class="catalog-header">
+    <h1 class="catalog-title">@ViewBag.Title</h1>
+    <p class="catalog-subtitle">Explorá series desde TheMovieDB</p>
+</div>
 
-    input {
-        color: black;
+<div class="catalog-toolbar">
+    @using (Html.BeginForm("Buscar", "Series", FormMethod.Get, new { @class = "catalog-search-form" }))
+    {
+        <input type="text" name="q" class="form-control catalog-search-input" placeholder="Buscar series..." />
+        <button type="submit" class="btn btn-danger">Buscar</button>
     }
-</style>
+    <div class="catalog-links">
+        @Html.ActionLink("Populares", "Index", "Series", null, new { @class = "btn btn-outline-light btn-sm" })
+        @Html.ActionLink("Tendencias", "Tendencias", "Series", null, new { @class = "btn btn-outline-light btn-sm" })
+    </div>
+</div>
 
-    <h2 > Series</h2 >
+@if (ViewBag.Error != null)
+{
+    <div class="alert alert-danger">@ViewBag.Error</div>
+}
+
+@if (Model == null || !Model.Any())
+{
+    <p class="text-muted">No hay series para mostrar.</p>
+}
+else
+{
+    <div class="catalog-grid">
+        @foreach (var item in Model)
+        {
+            <a href="@Url.Action("Detalle", "Series", new { id = item.Id })" class="catalog-card">
+                <img src="@RedFlix.Services.TMDBService.GetPosterUrl(item.PosterPath)" alt="@item.Name" class="catalog-poster" />
+                <div class="catalog-card-body">
+                    <h3>@item.Name</h3>
+                    <p class="catalog-meta">
+                        @if (!string.IsNullOrEmpty(item.FirstAirDate))
+                        {
+                            @item.FirstAirDate.Substring(0, Math.Min(4, item.FirstAirDate.Length))
+                        }
+                        · ★ @item.VoteAverage.ToString("0.0")
+                    </p>
+                    <p class="catalog-overview">@item.Overview</p>
+                </div>
+            </a>
+        }
+    </div>
+}

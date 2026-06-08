@@ -4,7 +4,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@ViewBag.Title - Mi aplicación ASP.NET</title>
+    <title>@ViewBag.Title - RedFlix+</title>
     @Styles.Render("~/Content/css")
     @Scripts.Render("~/bundles/modernizr")
 </head>
@@ -21,9 +21,11 @@
             <div class="collapse navbar-collapse d-sm-inline-flex justify-content-between">
                 <ul class="navbar-nav flex-grow-1">
                     <li>@Html.ActionLink("Inicio", "Index", "Home", new { area = "" }, new { @class = "nav-link" })</li>
+                    <li>@Html.ActionLink("Películas", "Index", "Peliculas", new { area = "" }, new { @class = "nav-link" })</li>
+                    <li>@Html.ActionLink("Series", "Index", "Series", new { area = "" }, new { @class = "nav-link" })</li>
 
-                    @if (Session["rolID"] != null &&
-                    Convert.ToInt32(Session["rolID"]) == 1)
+                    @if (Session["RolID"] != null &&
+                    Convert.ToInt32(Session["RolID"]) == 1)
                     {
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle"
@@ -64,30 +66,31 @@
 
 
 
-            @if (Session["Nombre"] != null)
-            {
-                <span class="me-3">Bienvenido @Session["Nombre"]</span>
-
-                <a href="@Url.Action("Logout", "Login")">
-                    Cerrar sesión
-                </a>
-            }
-            else
-            {
-                <a href="@Url.Action("Index", "Login")">
-                    Iniciar sesión
-                </a>
-            }
+            <div class="navbar-auth d-flex align-items-center gap-3">
+                @if (Session["Nombre"] != null)
+                {
+                    <span class="navbar-user">Hola, @Session["Nombre"]</span>
+                    <a href="@Url.Action("Logout", "Login")" class="btn btn-outline-light btn-sm">
+                        Cerrar sesión
+                    </a>
+                }
+                else
+                {
+                    <a href="@Url.Action("Index", "Login")" class="btn btn-danger btn-sm">
+                        Iniciar sesión
+                    </a>
+                }
+            </div>
         </div>
     </nav>
 
-    <div class="container body-content">
+    <div class="body-content">
         @RenderBody()
-        <hr />
     </div>
-</body>
-<script src="~/Scripts/bootstrap.bundle.min.js"></script>
 
-@Scripts.Render("~/bundles/jquery")
-@RenderSection("scripts", required: false)
+    <script src="~/Scripts/bootstrap.bundle.min.js"></script>
+
+    @Scripts.Render("~/bundles/jquery")
+    @RenderSection("scripts", required: false)
+</body>
 </html>

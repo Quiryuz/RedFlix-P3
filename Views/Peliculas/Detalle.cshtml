@@ -1,0 +1,61 @@
+@model RedFlix.Models.Tmdb.TmdbMovieDetail
+@{
+    ViewBag.Title = Model.Title;
+    var trailerKey = RedFlix.Services.TMDBService.GetYoutubeTrailerKey(Model.Videos);
+    var backdrop = RedFlix.Services.TMDBService.GetBackdropUrl(Model.BackdropPath);
+}
+
+<div class="detail-hero" style="@(backdrop != null ? "background-image:url('" + backdrop + "');" : "")">
+    <div class="detail-hero-overlay">
+        <div class="detail-hero-content">
+            <img src="@RedFlix.Services.TMDBService.GetPosterUrl(Model.PosterPath)" alt="@Model.Title" class="detail-poster" />
+            <div>
+                <h1>@Model.Title</h1>
+                <p class="detail-meta">
+                    @if (!string.IsNullOrEmpty(Model.ReleaseDate))
+                    {
+                        <span>@Model.ReleaseDate</span>
+                    }
+                    @if (Model.Runtime.HasValue)
+                    {
+                        <span> · @Model.Runtime min</span>
+                    }
+                    <span> · ★ @Model.VoteAverage.ToString("0.0")</span>
+                </p>
+                @if (Model.Genres != null && Model.Genres.Any())
+                {
+                    <p class="detail-genres">@string.Join(", ", Model.Genres.Select(g => g.Name))</p>
+                }
+                <p>@Model.Overview</p>
+                @Html.ActionLink("← Volver al catálogo", "Index", "Peliculas", null, new { @class = "btn btn-outline-light btn-sm mt-2" })
+            </div>
+        </div>
+    </div>
+</div>
+
+@if (!string.IsNullOrEmpty(trailerKey))
+{
+    <section class="detail-section">
+        <h2>Trailer</h2>
+        <div class="ratio ratio-16x9 detail-trailer">
+            <iframe src="https://www.youtube.com/embed/@trailerKey" title="Trailer" allowfullscreen></iframe>
+        </div>
+    </section>
+}
+
+@if (Model.Credits?.Cast != null && Model.Credits.Cast.Any())
+{
+    <section class="detail-section">
+        <h2>Actores principales</h2>
+        <div class="cast-grid">
+            @foreach (var actor in Model.Credits.Cast.Take(10))
+            {
+                <div class="cast-card">
+                    <img src="@RedFlix.Services.TMDBService.GetProfileUrl(actor.ProfilePath)" alt="@actor.Name" />
+                    <strong>@actor.Name</strong>
+                    <span>@actor.Character</span>
+                </div>
+            }
+        </div>
+    </section>
+}

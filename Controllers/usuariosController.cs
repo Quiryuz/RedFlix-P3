@@ -99,7 +99,7 @@ namespace RedFlix.Controllers
         {
             if (id == null)
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                return RedirectToAction("Index");
             }
             usuarios usuarios = db.usuarios.Find(id);
             if (usuarios == null)

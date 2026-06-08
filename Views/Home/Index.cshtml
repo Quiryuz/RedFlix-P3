@@ -1,19 +1,66 @@
-﻿@{
-    ViewBag.Title = "Home Page";
+﻿@using RedFlix.Models.Tmdb
+@{
+    ViewBag.Title = "Inicio";
+    var movies = ViewBag.TrendingMovies as List<TmdbMovieResult>;
+    var series = ViewBag.TrendingSeries as List<TmdbTvResult>;
 }
-@*fondo negro pa programar demadrugada sin morir*@
-<style>
-    body {
-        background-color: #000;
-        color: white;
-    }
 
-    input {
-        color: black;
-    }
-</style>
-<main>
+<section class="hero-banner">
+    <div class="hero-content">
+        <h1>RedFlix+</h1>
+        <p>Películas, series, tendencias y recomendaciones en un solo lugar.</p>
+        <div class="hero-actions">
+            @Html.ActionLink("Ver películas", "Index", "Peliculas", null, new { @class = "btn btn-danger btn-lg" })
+            @Html.ActionLink("Ver series", "Index", "Series", null, new { @class = "btn btn-outline-light btn-lg" })
+        </div>
+    </div>
+</section>
 
+@if (ViewBag.Error != null)
+{
+    <div class="alert alert-danger">@ViewBag.Error</div>
+}
 
-  
-</main>
+@if (movies != null && movies.Any())
+{
+    <section class="home-section">
+        <div class="section-header">
+            <h2>Películas en tendencia</h2>
+            @Html.ActionLink("Ver todas", "Tendencias", "Peliculas", null, new { @class = "section-link" })
+        </div>
+        <div class="catalog-grid catalog-grid-compact">
+            @foreach (var item in movies.Take(8))
+            {
+                <a href="@Url.Action("Detalle", "Peliculas", new { id = item.Id })" class="catalog-card">
+                    <img src="@RedFlix.Services.TMDBService.GetPosterUrl(item.PosterPath)" alt="@item.Title" class="catalog-poster" />
+                    <div class="catalog-card-body">
+                        <h3>@item.Title</h3>
+                        <p class="catalog-meta">★ @item.VoteAverage.ToString("0.0")</p>
+                    </div>
+                </a>
+            }
+        </div>
+    </section>
+}
+
+@if (series != null && series.Any())
+{
+    <section class="home-section">
+        <div class="section-header">
+            <h2>Series en tendencia</h2>
+            @Html.ActionLink("Ver todas", "Tendencias", "Series", null, new { @class = "section-link" })
+        </div>
+        <div class="catalog-grid catalog-grid-compact">
+            @foreach (var item in series.Take(8))
+            {
+                <a href="@Url.Action("Detalle", "Series", new { id = item.Id })" class="catalog-card">
+                    <img src="@RedFlix.Services.TMDBService.GetPosterUrl(item.PosterPath)" alt="@item.Name" class="catalog-poster" />
+                    <div class="catalog-card-body">
+                        <h3>@item.Name</h3>
+                        <p class="catalog-meta">★ @item.VoteAverage.ToString("0.0")</p>
+                    </div>
+                </a>
+            }
+        </div>
+    </section>
+}

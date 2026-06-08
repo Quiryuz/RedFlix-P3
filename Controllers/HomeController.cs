@@ -1,29 +1,38 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+using System.Threading.Tasks;
 using System.Web.Mvc;
+using RedFlix.Services;
 
 namespace RedFlix.Controllers
 {
     public class HomeController : Controller
     {
-        public ActionResult Index()
+        private readonly TMDBService _tmdb = new TMDBService();
+
+        public async Task<ActionResult> Index()
         {
+            try
+            {
+                ViewBag.TrendingMovies = (await _tmdb.GetTrendingMoviesAsync()).Results;
+                ViewBag.TrendingSeries = (await _tmdb.GetTrendingSeriesAsync()).Results;
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Error = "No se pudo conectar con TMDB: " + ex.Message;
+            }
+
             return View();
         }
 
         public ActionResult About()
         {
-            ViewBag.Message = "Your application description page.";
-
+            ViewBag.Message = "RedFlix+ - Plataforma de streaming.";
             return View();
         }
 
         public ActionResult Contact()
         {
-            ViewBag.Message = "Your contact page.";
-
+            ViewBag.Message = "Contacto RedFlix+.";
             return View();
         }
     }

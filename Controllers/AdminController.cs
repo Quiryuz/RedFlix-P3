@@ -11,7 +11,7 @@ namespace RedFlix.Controllers
         // GET: Admin
         public ActionResult Index()
         {
-            if (Session["rolID"] == null || Convert.ToInt32(Session["rolID"]) != 1)
+            if (Session["RolID"] == null || Convert.ToInt32(Session["RolID"]) != 1)
             {
                 return RedirectToAction("Index", "Home");
             }
