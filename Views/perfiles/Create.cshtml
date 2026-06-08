@@ -2,6 +2,8 @@
 
 @{
     ViewBag.Title = "Create";
+    var iconos = ViewBag.Iconos as string[] ?? RedFlix.Services.ProfileService.DefaultIcons;
+    var selectedIcon = Model != null && !string.IsNullOrWhiteSpace(Model.Icono) ? Model.Icono : iconos[0];
 }
 
 @{ ViewBag.ModuleTitle = "Crear"; ViewBag.ModuleSubtitle = "Perfiles por cuenta de usuario"; ViewBag.ShowCreate = false; }
@@ -25,10 +27,15 @@
         </div>
 
         <div class="form-group">
-            @Html.LabelFor(model => model.Icono, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.Icono, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.Icono, "", new { @class = "text-danger" })
+            <label>Icono</label>
+            <div class="profile-icon-options">
+                @foreach (var icono in iconos)
+                {
+                    <label class="profile-icon-option">
+                        <input type="radio" name="Icono" value="@icono" @(selectedIcon == icono ? "checked" : "") />
+                        <span class="profile-avatar profile-avatar-sm profile-avatar-@icono"></span>
+                    </label>
+                }
             </div>
         </div>
 
@@ -38,6 +45,12 @@
                 @Html.DropDownList("usuarioID", null, htmlAttributes: new { @class = "form-control" })
                 @Html.ValidationMessageFor(model => model.usuarioID, "", new { @class = "text-danger" })
             </div>
+        </div>
+
+        <div class="form-group">
+            <label>Contraseña del perfil</label>
+            <input type="password" name="ContrasenaPerfil" class="form-control" placeholder="Opcional" />
+            <small class="text-muted">Podés dejarla vacía si el perfil no requiere contraseña.</small>
         </div>
 
         <div class="form-group">

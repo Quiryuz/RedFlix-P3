@@ -1,0 +1,27 @@
+@model RedFlix.usuarios
+
+@{
+    ViewBag.Title = "Datos de mi cuenta";
+    ViewBag.ModuleTitle = "Datos de mi cuenta";
+    ViewBag.ModuleSubtitle = "Información asociada al usuario logueado";
+    ViewBag.ShowCreate = false;
+}
+
+@Html.Partial("_ModuleHeader")
+
+<div class="module-card">
+    <dl class="dl-horizontal module-details">
+        <dt>Nombre</dt>
+        <dd>@Model.Nombre</dd>
+
+        <dt>Email</dt>
+        <dd>@Model.Mail</dd>
+
+        <dt>Rol</dt>
+        <dd>@(Model.Roles != null ? Model.Roles.Nombre : "Sin rol")</dd>
+    </dl>
+</div>
+
+<div class="module-footer-links">
+    @Html.ActionLink("Volver a mis perfiles", "Index", null, new { @class = "btn btn-outline-light btn-sm" })
+</div>

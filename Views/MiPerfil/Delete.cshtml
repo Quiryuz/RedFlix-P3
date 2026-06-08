@@ -1,0 +1,30 @@
+@model RedFlix.Models.ProfileViewModel
+
+@{
+    ViewBag.Title = "Eliminar perfil";
+    ViewBag.ModuleTitle = "Eliminar perfil";
+    ViewBag.ModuleSubtitle = "Esta acción no se puede deshacer";
+    ViewBag.ShowCreate = false;
+}
+
+@Html.Partial("_ModuleHeader")
+
+<div class="module-card">
+    <p class="module-delete-warning">¿Estás seguro de que querés eliminar este perfil?</p>
+    <div class="profile-detail">
+        <div class="profile-avatar profile-avatar-lg profile-avatar-@Model.Icono"></div>
+        <dl class="dl-horizontal module-details">
+            <dt>Nombre</dt>
+            <dd>@Model.Nombre</dd>
+        </dl>
+    </div>
+
+    @using (Html.BeginForm())
+    {
+        @Html.AntiForgeryToken()
+        <div class="module-form-actions">
+            <input type="submit" value="Eliminar" class="btn btn-danger" />
+            @Html.ActionLink("Cancelar", "Index", null, new { @class = "btn btn-outline-light" })
+        </div>
+    }
+</div>

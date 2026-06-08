@@ -1,0 +1,50 @@
+@model IEnumerable<RedFlix.Models.ContentItemViewModel>
+
+@{
+    ViewBag.Title = "Mis favoritos";
+    ViewBag.ModuleTitle = "Mis favoritos";
+    ViewBag.ModuleSubtitle = "Favoritos del perfil activo: " + (ViewBag.PerfilActivo ?? "");
+    ViewBag.ShowCreate = false;
+}
+
+@Html.Partial("_ModuleHeader")
+
+<div class="module-footer-links mb-3">
+    @Html.ActionLink("Mis listas", "Listas", null, new { @class = "btn btn-outline-light btn-sm" })
+    @Html.ActionLink("Mis perfiles", "Index", null, new { @class = "module-back-link" })
+</div>
+
+@if (Model == null || !Model.Any())
+{
+    <div class="module-card">
+        <p class="text-muted mb-0">Todavía no agregaste favoritos.</p>
+    </div>
+}
+else
+{
+    <div class="catalog-grid">
+        @foreach (var item in Model)
+        {
+            var controller = item.Tipo == "Serie" ? "Series" : "Peliculas";
+            <div class="catalog-card">
+                <a href="@Url.Action("Detalle", controller, new { id = item.TmdbId })" class="catalog-card-link">
+                    <img src="@RedFlix.Services.TMDBService.GetPosterUrl(item.PosterPath)" alt="@item.Titulo" class="catalog-poster" />
+                    <div class="catalog-card-body">
+                        <h3>@item.Titulo</h3>
+                        <p class="catalog-meta">@item.Tipo · ★ @item.Puntaje.ToString("0.0")</p>
+                    </div>
+                </a>
+                <div class="content-actions">
+                    @using (Html.BeginForm("ToggleFavorito", "MiPerfil", FormMethod.Post))
+                    {
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="tmdbId" value="@item.TmdbId" />
+                        <input type="hidden" name="tipo" value="@item.Tipo" />
+                        <input type="hidden" name="returnUrl" value="@Request.RawUrl" />
+                        <button type="submit" class="btn btn-outline-danger btn-sm w-100">Quitar favorito</button>
+                    }
+                </div>
+            </div>
+        }
+    </div>
+}

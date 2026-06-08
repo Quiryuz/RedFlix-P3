@@ -1,0 +1,26 @@
+@model IEnumerable<RedFlix.Models.Authorization.PermissionGroupViewModel>
+
+<div class="permissions-section">
+    <h3 class="permissions-title">Permisos asignados</h3>
+
+    @foreach (var grupo in Model)
+    {
+        var asignados = grupo.Permisos.Where(p => p.Asignado).ToList();
+        <div class="permission-group">
+            <h4 class="permission-group-title">@grupo.EntidadDisplay</h4>
+            @if (asignados.Any())
+            {
+                <div class="permission-tags">
+                    @foreach (var permiso in asignados)
+                    {
+                        <span class="permission-tag">@permiso.Accion</span>
+                    }
+                </div>
+            }
+            else
+            {
+                <p class="text-muted mb-0">Sin permisos asignados.</p>
+            }
+        </div>
+    }
+</div>

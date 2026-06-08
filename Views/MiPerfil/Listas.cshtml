@@ -1,0 +1,38 @@
+@model IEnumerable<RedFlix.listas>
+
+@{
+    ViewBag.Title = "Mis listas";
+    ViewBag.ModuleTitle = "Mis listas";
+    ViewBag.ModuleSubtitle = "Listas del perfil activo: " + (ViewBag.PerfilActivo ?? "");
+    ViewBag.ShowCreate = false;
+}
+
+@Html.Partial("_ModuleHeader")
+
+<div class="module-footer-links mb-3">
+    @Html.ActionLink("Crear lista", "CrearLista", null, new { @class = "btn btn-danger btn-sm" })
+    @Html.ActionLink("Mis favoritos", "Favoritos", null, new { @class = "btn btn-outline-light btn-sm" })
+    @Html.ActionLink("Mis perfiles", "Index", null, new { @class = "module-back-link" })
+</div>
+
+<div class="module-card module-card-table">
+    <div class="table-responsive">
+        <table class="table module-table">
+            <tr>
+                <th>Nombre</th>
+                <th></th>
+            </tr>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.nombre</td>
+                    <td>
+                        @Html.ActionLink("Ver contenido", "DetalleLista", new { id = item.ID }) |
+                        @Html.ActionLink("Editar", "EditarLista", new { id = item.ID }) |
+                        @Html.ActionLink("Eliminar", "EliminarLista", new { id = item.ID })
+                    </td>
+                </tr>
+            }
+        </table>
+    </div>
+</div>

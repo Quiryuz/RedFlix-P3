@@ -1,4 +1,6 @@
 @model RedFlix.Roles
+@using System.Collections.Generic
+@using RedFlix.Models.Authorization
 
 @{
     ViewBag.Title = "Details";
@@ -21,6 +23,11 @@
         </dd>
 
     </dl>
+
+    @if (ViewBag.PermissionGroups != null)
+    {
+        @Html.Partial("_RolePermissionsReadOnly", (IEnumerable<RedFlix.Models.Authorization.PermissionGroupViewModel>)ViewBag.PermissionGroups)
+    }
 </div>
 </div>
 <div class="module-footer-links">

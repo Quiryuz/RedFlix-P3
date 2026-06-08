@@ -7,9 +7,11 @@ using System.Net;
 using System.Web;
 using System.Web.Mvc;
 using RedFlix;
+using RedFlix.Authorization;
 
 namespace RedFlix.Controllers
 {
+    [AuthorizePermission(Entity = PermissionKeys.Listas)]
     public class listasController : Controller
     {
         private RedFlixIIIEntities db = new RedFlixIIIEntities();

@@ -1,4 +1,6 @@
-﻿<!DOCTYPE html>
+﻿@using RedFlix.Authorization
+@using RedFlix.Helpers
+<!DOCTYPE html>
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
@@ -9,23 +11,57 @@
     @Scripts.Render("~/bundles/modernizr")
 </head>
 <body>
+    @{
+        var usuarioLogueado = Session["UsuarioID"] != null;
+        var perfilActivo = Session["PerfilID"] != null;
+        var debeElegirPerfil = usuarioLogueado && !perfilActivo;
+        var puedePeliculas = !usuarioLogueado || (perfilActivo && PermissionHelper.PuedeVerModulo(Session, PermissionKeys.Peliculas));
+        var puedeSeries = !usuarioLogueado || (perfilActivo && PermissionHelper.PuedeVerModulo(Session, PermissionKeys.Series));
+        var puedeUsuarios = PermissionHelper.PuedeVerModulo(Session, PermissionKeys.Usuarios);
+        var puedeRoles = PermissionHelper.PuedeVerModulo(Session, PermissionKeys.Roles);
+        var puedePermisos = PermissionHelper.PuedeVerModulo(Session, PermissionKeys.Permisos);
+        var puedePerfiles = PermissionHelper.PuedeVerModulo(Session, PermissionKeys.Perfiles);
+        var puedeListas = PermissionHelper.PuedeVerModulo(Session, PermissionKeys.Listas);
+        var puedeFavoritos = PermissionHelper.PuedeVerModulo(Session, PermissionKeys.Favoritos);
+        var esAdmin = Session["RolID"] != null && Convert.ToInt32(Session["RolID"]) == 1;
+        var mostrarAdmin = usuarioLogueado && (puedeUsuarios || puedeRoles || puedePermisos || puedePerfiles || puedeListas || puedeFavoritos || esAdmin);
+    }
     <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark navbar-redflix">
 
         <div class="container-fluid px-4">
-            @Html.ActionLink("RedFlix", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })
+            @if (debeElegirPerfil)
+            {
+                <span class="navbar-brand">RedFlix</span>
+            }
+            else
+            {
+                @Html.ActionLink("RedFlix", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })
+            }
 
             <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" title="Alternar navegación" aria-controls="navbarSupportedContent"
                     aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
+            @if (!debeElegirPerfil)
+            {
             <div class="collapse navbar-collapse d-sm-inline-flex justify-content-between">
                 <ul class="navbar-nav flex-grow-1">
                     <li>@Html.ActionLink("Inicio", "Index", "Home", new { area = "" }, new { @class = "nav-link" })</li>
-                    <li>@Html.ActionLink("Películas", "Index", "Peliculas", new { area = "" }, new { @class = "nav-link" })</li>
-                    <li>@Html.ActionLink("Series", "Index", "Series", new { area = "" }, new { @class = "nav-link" })</li>
+                    @if (puedePeliculas)
+                    {
+                        <li>@Html.ActionLink("Películas", "Index", "Peliculas", new { area = "" }, new { @class = "nav-link" })</li>
+                    }
+                    @if (puedeSeries)
+                    {
+                        <li>@Html.ActionLink("Series", "Index", "Series", new { area = "" }, new { @class = "nav-link" })</li>
+                    }
+                    @if (perfilActivo)
+                    {
+                        <li>@Html.ActionLink("Mis listas", "Listas", "MiPerfil", new { area = "" }, new { @class = "nav-link" })</li>
+                        <li>@Html.ActionLink("Favoritos", "Favoritos", "MiPerfil", new { area = "" }, new { @class = "nav-link" })</li>
+                    }
 
-                    @if (Session["RolID"] != null &&
-                    Convert.ToInt32(Session["RolID"]) == 1)
+                    @if (mostrarAdmin)
                     {
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle"
@@ -37,29 +73,63 @@
                             </a>
 
                             <ul class="dropdown-menu dropdown-menu-dark">
-                                <li>@Html.ActionLink("Usuarios", "Index", "Usuarios", null, new { @class = "dropdown-item" })</li>
-                                <li>@Html.ActionLink("Roles", "Index", "Roles", null, new { @class = "dropdown-item" })</li>
-                                <li>@Html.ActionLink("Permisos", "Index", "Permisos", null, new { @class = "dropdown-item" })</li>
-                                <li>@Html.ActionLink("Perfiles", "Index", "Perfiles", null, new { @class = "dropdown-item" })</li>
-                                <li><hr class="dropdown-divider" /></li>
-                                <li>@Html.ActionLink("Favoritos", "Index", "Favoritos", null, new { @class = "dropdown-item" })</li>
-                                <li>@Html.ActionLink("Listas", "Index", "Listas", null, new { @class = "dropdown-item" })</li>
-                                <li>@Html.ActionLink("Calificaciones", "Index", "Calificaciones", null, new { @class = "dropdown-item" })</li>
-                                <li><hr class="dropdown-divider" /></li>
-                                <li>@Html.ActionLink("Clima", "Index", "Climas", null, new { @class = "dropdown-item" })</li>
-                                <li>@Html.ActionLink("Cotizaciones", "Index", "Cotizaciones", null, new { @class = "dropdown-item" })</li>
+                                @if (puedeUsuarios)
+                                {
+                                    <li>@Html.ActionLink("Usuarios", "Index", "Usuarios", null, new { @class = "dropdown-item" })</li>
+                                }
+                                @if (puedeRoles)
+                                {
+                                    <li>@Html.ActionLink("Roles", "Index", "Roles", null, new { @class = "dropdown-item" })</li>
+                                }
+                                @if (puedePermisos)
+                                {
+                                    <li>@Html.ActionLink("Permisos", "Index", "Permisos", null, new { @class = "dropdown-item" })</li>
+                                }
+                                @if (puedePerfiles)
+                                {
+                                    <li>@Html.ActionLink("Perfiles", "Index", "Perfiles", null, new { @class = "dropdown-item" })</li>
+                                }
+                                @if (puedeFavoritos || puedeListas || esAdmin)
+                                {
+                                    <li><hr class="dropdown-divider" /></li>
+                                }
+                                @if (puedeFavoritos)
+                                {
+                                    <li>@Html.ActionLink("Favoritos", "Index", "Favoritos", null, new { @class = "dropdown-item" })</li>
+                                }
+                                @if (puedeListas)
+                                {
+                                    <li>@Html.ActionLink("Listas", "Index", "Listas", null, new { @class = "dropdown-item" })</li>
+                                }
+                                @if (esAdmin)
+                                {
+                                    <li>@Html.ActionLink("Calificaciones", "Index", "Calificaciones", null, new { @class = "dropdown-item" })</li>
+                                    <li><hr class="dropdown-divider" /></li>
+                                    <li>@Html.ActionLink("Clima", "Index", "Climas", null, new { @class = "dropdown-item" })</li>
+                                    <li>@Html.ActionLink("Cotizaciones", "Index", "Cotizaciones", null, new { @class = "dropdown-item" })</li>
+                                }
                             </ul>
                         </li>
                     }
                 </ul>
             </div>
-
-
+            }
 
             <div class="navbar-auth d-flex align-items-center gap-3">
-                @if (Session["Nombre"] != null)
+                @if (debeElegirPerfil)
+                {
+                    <span class="navbar-user">Seleccioná un perfil para continuar</span>
+                }
+                else if (Session["Nombre"] != null)
                 {
                     <span class="navbar-user">Hola, @Session["Nombre"]</span>
+                    if (Session["PerfilNombre"] != null)
+                    {
+                        <span class="navbar-user">Perfil: @Session["PerfilNombre"]</span>
+                    }
+                    <a href="@Url.Action("Index", "MiPerfil")" class="btn btn-outline-light btn-sm">
+                        Mi perfil
+                    </a>
                     <a href="@Url.Action("Logout", "Login")" class="btn btn-outline-light btn-sm">
                         Cerrar sesión
                     </a>

@@ -11,6 +11,11 @@ namespace RedFlix.Controllers
 
         public async Task<ActionResult> Index()
         {
+            if (Session["UsuarioID"] != null && Session["PerfilID"] == null)
+            {
+                return RedirectToAction("Index", "MiPerfil");
+            }
+
             try
             {
                 ViewBag.TrendingMovies = (await _tmdb.GetTrendingMoviesAsync()).Results;
@@ -33,6 +38,11 @@ namespace RedFlix.Controllers
         public ActionResult Contact()
         {
             ViewBag.Message = "Contacto RedFlix+.";
+            return View();
+        }
+
+        public ActionResult AccessDenied()
+        {
             return View();
         }
     }

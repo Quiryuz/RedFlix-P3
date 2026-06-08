@@ -7,9 +7,11 @@ using System.Net;
 using System.Web;
 using System.Web.Mvc;
 using RedFlix;
+using RedFlix.Authorization;
 
 namespace RedFlix.Controllers
 {
+    [AuthorizePermission(Entity = PermissionKeys.Usuarios)]
     public class usuariosController : Controller
     {
         private RedFlixIIIEntities db = new RedFlixIIIEntities();
@@ -36,7 +38,7 @@ namespace RedFlix.Controllers
             return View(usuarios);
         }
 
-        // GET: usuarios/Create
+        [AuthorizePermission(Entity = PermissionKeys.Usuarios, AllowAnonymous = true)]
         public ActionResult Create()
         {
             ViewBag.RolID = new SelectList(db.Roles, "ID", "Nombre");
@@ -48,6 +50,7 @@ namespace RedFlix.Controllers
         // más detalles, vea https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [AuthorizePermission(Entity = PermissionKeys.Usuarios, AllowAnonymous = true)]
         public ActionResult Create([Bind(Include = "ID,Nombre,Mail,RolID,Contrasena")] usuarios usuarios)
         {
             if (ModelState.IsValid)

@@ -27,6 +27,9 @@
                     <p class="detail-genres">@string.Join(", ", Model.Genres.Select(g => g.Name))</p>
                 }
                 <p>@Model.Overview</p>
+                <div class="detail-actions">
+                    @Html.Partial("_ContentActions", null, new ViewDataDictionary(ViewData) { { "TmdbId", Model.Id }, { "Tipo", "Pelicula" } })
+                </div>
                 @Html.ActionLink("← Volver al catálogo", "Index", "Peliculas", null, new { @class = "btn btn-outline-light btn-sm mt-2" })
             </div>
         </div>

@@ -5,6 +5,7 @@ using System.Web;
 using System.Web.Mvc;
 using System.Web.Optimization;
 using System.Web.Routing;
+using RedFlix.Services;
 
 namespace RedFlix
 {
@@ -16,6 +17,15 @@ namespace RedFlix
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
+
+            try
+            {
+                new PermissionService().EnsurePermissionCatalog();
+                new ProfileService().EnsureProfilePasswordColumn();
+            }
+            catch
+            {
+            }
         }
     }
 }

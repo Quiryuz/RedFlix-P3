@@ -1,0 +1,28 @@
+@model RedFlix.listas
+
+@{
+    ViewBag.Title = "Crear lista";
+    ViewBag.ModuleTitle = "Crear lista";
+    ViewBag.ModuleSubtitle = "Creá una lista para el perfil activo";
+    ViewBag.ShowCreate = false;
+}
+
+@Html.Partial("_ModuleHeader")
+
+<div class="module-card">
+    @using (Html.BeginForm())
+    {
+        @Html.AntiForgeryToken()
+        <div class="module-form">
+            <div class="form-group">
+                <label>Nombre</label>
+                @Html.TextBoxFor(model => model.nombre, new { @class = "form-control", placeholder = "Ej: Para ver el finde" })
+                @Html.ValidationMessageFor(model => model.nombre, "", new { @class = "text-danger" })
+            </div>
+            <div class="module-form-actions">
+                <input type="submit" value="Guardar" class="btn btn-danger" />
+                @Html.ActionLink("Volver", "Listas", null, new { @class = "btn btn-outline-light" })
+            </div>
+        </div>
+    }
+</div>

@@ -2,6 +2,7 @@
 
 @{
     ViewBag.Title = "Delete";
+    var contrasenaPerfil = ViewBag.ContrasenaPerfil as string;
 }
 
 @{ ViewBag.ModuleTitle = "Eliminar"; ViewBag.ModuleSubtitle = "Perfiles por cuenta de usuario"; ViewBag.ShowCreate = false; }
@@ -26,7 +27,15 @@
         </dt>
 
         <dd>
-            @Html.DisplayFor(model => model.Icono)
+            <span class="profile-avatar profile-avatar-sm profile-avatar-@Model.Icono"></span>
+        </dd>
+
+        <dt>
+            Contraseña
+        </dt>
+
+        <dd>
+            @(string.IsNullOrWhiteSpace(contrasenaPerfil) ? "Sin contraseña" : "Configurada")
         </dd>
 
         <dt>

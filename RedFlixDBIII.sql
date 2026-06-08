@@ -93,6 +93,7 @@ CREATE TABLE perfiles (
     ID INT IDENTITY(1,1) PRIMARY KEY,
     Nombre VARCHAR(50) NOT NULL,
     Icono VARCHAR(MAX) NULL,
+    ContrasenaPerfil VARCHAR(255) NULL,
     usuarioID INT NOT NULL,
 
     CONSTRAINT fk_perfil_usuario
@@ -150,3 +151,8 @@ DEFAULT ''
 
 ALTER TABLE cotizaciones
 ALTER COLUMN valor DECIMAL(18,4) NOT NULL
+
+IF COL_LENGTH('dbo.perfiles', 'ContrasenaPerfil') IS NULL
+BEGIN
+    ALTER TABLE dbo.perfiles ADD ContrasenaPerfil VARCHAR(255) NULL
+END

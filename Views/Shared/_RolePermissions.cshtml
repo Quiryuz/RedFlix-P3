@@ -1,0 +1,26 @@
+@model IEnumerable<RedFlix.Models.Authorization.PermissionGroupViewModel>
+
+<div class="permissions-section">
+    <h3 class="permissions-title">Permisos</h3>
+    <p class="permissions-subtitle">Seleccioná los permisos que tendrá este rol, agrupados por entidad.</p>
+
+    @foreach (var grupo in Model)
+    {
+        <div class="permission-group">
+            <h4 class="permission-group-title">@grupo.EntidadDisplay</h4>
+            <div class="permission-checkboxes">
+                @foreach (var permiso in grupo.Permisos)
+                {
+                    <label class="permission-check-item">
+                        <input type="checkbox"
+                               name="permisoIds"
+                               value="@permiso.Id"
+                               @(permiso.Asignado ? "checked" : "") />
+                        <span>@permiso.Accion</span>
+                        <small>@permiso.Nombre</small>
+                    </label>
+                }
+            </div>
+        </div>
+    }
+</div>

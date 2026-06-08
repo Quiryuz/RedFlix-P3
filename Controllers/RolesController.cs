@@ -1,49 +1,48 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Data;
 using System.Data.Entity;
 using System.Linq;
 using System.Net;
-using System.Web;
 using System.Web.Mvc;
 using RedFlix;
+using RedFlix.Authorization;
+using RedFlix.Helpers;
+using RedFlix.Services;
 
 namespace RedFlix.Controllers
 {
+    [AuthorizePermission(Entity = PermissionKeys.Roles)]
     public class RolesController : Controller
     {
-        private RedFlixIIIEntities db = new RedFlixIIIEntities();
+        private readonly RedFlixIIIEntities db = new RedFlixIIIEntities();
+        private readonly PermissionService _permissionService = new PermissionService();
 
-        // GET: Roles
         public ActionResult Index()
         {
             return View(db.Roles.ToList());
         }
 
-        // GET: Roles/Details/5
         public ActionResult Details(int? id)
         {
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
+
             Roles roles = db.Roles.Find(id);
             if (roles == null)
             {
                 return HttpNotFound();
             }
+
+            ViewBag.PermissionGroups = _permissionService.BuildPermissionGroups(id);
             return View(roles);
         }
 
-        // GET: Roles/Create
         public ActionResult Create()
         {
             return View();
         }
 
-        // POST: Roles/Create
-        // Para protegerse de ataques de publicación excesiva, habilite las propiedades específicas a las que quiere enlazarse. Para obtener 
-        // más detalles, vea https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Create([Bind(Include = "ID,Nombre")] Roles roles)
@@ -58,53 +57,63 @@ namespace RedFlix.Controllers
             return View(roles);
         }
 
-        // GET: Roles/Edit/5
         public ActionResult Edit(int? id)
         {
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
+
             Roles roles = db.Roles.Find(id);
             if (roles == null)
             {
                 return HttpNotFound();
             }
+
+            ViewBag.PermissionGroups = _permissionService.BuildPermissionGroups(id);
             return View(roles);
         }
 
-        // POST: Roles/Edit/5
-        // Para protegerse de ataques de publicación excesiva, habilite las propiedades específicas a las que quiere enlazarse. Para obtener 
-        // más detalles, vea https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "ID,Nombre")] Roles roles)
+        public ActionResult Edit([Bind(Include = "ID,Nombre")] Roles roles, int[] permisoIds)
         {
             if (ModelState.IsValid)
             {
                 db.Entry(roles).State = EntityState.Modified;
                 db.SaveChanges();
+                _permissionService.AssignPermissionsToRole(roles.ID, permisoIds ?? new int[0]);
+
+                if (Session["RolID"] != null && Convert.ToInt32(Session["RolID"]) == roles.ID)
+                {
+                    PermissionHelper.SetUserPermissions(
+                        Session,
+                        _permissionService.GetPermissionNamesForRole(roles.ID));
+                }
+
                 return RedirectToAction("Index");
             }
+
+            ViewBag.PermissionGroups = _permissionService.BuildPermissionGroups(roles.ID);
             return View(roles);
         }
 
-        // GET: Roles/Delete/5
         public ActionResult Delete(int? id)
         {
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
+
             Roles roles = db.Roles.Find(id);
             if (roles == null)
             {
                 return HttpNotFound();
             }
+
             return View(roles);
         }
 
-        // POST: Roles/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)

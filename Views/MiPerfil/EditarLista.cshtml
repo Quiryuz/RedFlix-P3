@@ -1,0 +1,29 @@
+@model RedFlix.listas
+
+@{
+    ViewBag.Title = "Editar lista";
+    ViewBag.ModuleTitle = "Editar lista";
+    ViewBag.ModuleSubtitle = "Actualizá el nombre de tu lista";
+    ViewBag.ShowCreate = false;
+}
+
+@Html.Partial("_ModuleHeader")
+
+<div class="module-card">
+    @using (Html.BeginForm())
+    {
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(model => model.ID)
+        <div class="module-form">
+            <div class="form-group">
+                <label>Nombre</label>
+                @Html.TextBoxFor(model => model.nombre, new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.nombre, "", new { @class = "text-danger" })
+            </div>
+            <div class="module-form-actions">
+                <input type="submit" value="Guardar cambios" class="btn btn-danger" />
+                @Html.ActionLink("Volver", "Listas", null, new { @class = "btn btn-outline-light" })
+            </div>
+        </div>
+    }
+</div>

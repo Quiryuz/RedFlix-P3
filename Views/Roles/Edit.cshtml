@@ -1,4 +1,6 @@
 @model RedFlix.Roles
+@using System.Collections.Generic
+@using RedFlix.Models.Authorization
 
 @{
     ViewBag.Title = "Edit";
@@ -28,10 +30,15 @@
 
         <div class="form-group">
             <div class="col-md-offset-2 col-md-10">
-                <input type="submit" value="Save" class="btn btn-danger" />
+                <input type="submit" value="Guardar cambios" class="btn btn-danger" />
             </div>
         </div>
     </div>
+
+    if (ViewBag.PermissionGroups != null)
+    {
+        @Html.Partial("_RolePermissions", (IEnumerable<RedFlix.Models.Authorization.PermissionGroupViewModel>)ViewBag.PermissionGroups)
+    }
 }
 
 @section Scripts {

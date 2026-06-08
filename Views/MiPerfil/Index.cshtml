@@ -1,0 +1,50 @@
+@model IEnumerable<RedFlix.Models.ProfileViewModel>
+
+@{
+    ViewBag.Title = "Elegir perfil";
+    ViewBag.ModuleTitle = "¿Quién está mirando?";
+    ViewBag.ModuleSubtitle = "Elegí un perfil para continuar en RedFlix+";
+    ViewBag.ShowCreate = false;
+}
+
+@Html.Partial("_ModuleHeader")
+
+<div class="module-footer-links mb-3">
+    @Html.ActionLink("Crear perfil", "Create", null, new { @class = "btn btn-danger btn-sm" })
+    @if (Session["PerfilID"] != null)
+    {
+        @Html.ActionLink("Mis listas", "Listas", null, new { @class = "btn btn-outline-light btn-sm" })
+        @Html.ActionLink("Mis favoritos", "Favoritos", null, new { @class = "btn btn-outline-light btn-sm" })
+    }
+    @Html.ActionLink("Datos de mi cuenta", "Cuenta", null, new { @class = "btn btn-outline-light btn-sm" })
+</div>
+
+@if (Model == null || !Model.Any())
+{
+    <div class="module-card">
+        <p class="text-muted mb-0">Aún no tenés perfiles creados.</p>
+    </div>
+}
+else
+{
+    <div class="profile-grid">
+        @foreach (var item in Model)
+        {
+            <div class="profile-card">
+                <div class="profile-avatar profile-avatar-@item.Icono"></div>
+                <h3>@item.Nombre</h3>
+                <p>@(string.IsNullOrWhiteSpace(item.ContrasenaPerfil) ? "Sin contraseña" : "Protegido con contraseña")</p>
+                @if (Session["PerfilID"] != null && Convert.ToInt32(Session["PerfilID"]) == item.ID)
+                {
+                    <span class="profile-active-badge">Perfil activo</span>
+                }
+                <div class="profile-actions">
+                    @Html.ActionLink("Entrar", "Seleccionar", new { id = item.ID }, new { @class = "btn btn-danger btn-sm" })
+                    @Html.ActionLink("Ver", "Details", new { id = item.ID }, new { @class = "btn btn-outline-light btn-sm" })
+                    @Html.ActionLink("Editar", "Edit", new { id = item.ID }, new { @class = "btn btn-outline-light btn-sm" })
+                    @Html.ActionLink("Eliminar", "Delete", new { id = item.ID }, new { @class = "btn btn-outline-danger btn-sm" })
+                </div>
+            </div>
+        }
+    </div>
+}

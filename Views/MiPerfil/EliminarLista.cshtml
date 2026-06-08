@@ -1,0 +1,22 @@
+@model RedFlix.listas
+
+@{
+    ViewBag.Title = "Eliminar lista";
+    ViewBag.ModuleTitle = "Eliminar lista";
+    ViewBag.ModuleSubtitle = "Se quitará la lista y su contenido";
+    ViewBag.ShowCreate = false;
+}
+
+@Html.Partial("_ModuleHeader")
+
+<div class="module-card">
+    <p class="module-delete-warning">¿Estás seguro de que querés eliminar la lista "@Model.nombre"?</p>
+    @using (Html.BeginForm())
+    {
+        @Html.AntiForgeryToken()
+        <div class="module-form-actions">
+            <input type="submit" value="Eliminar" class="btn btn-danger" />
+            @Html.ActionLink("Cancelar", "Listas", null, new { @class = "btn btn-outline-light" })
+        </div>
+    }
+</div>

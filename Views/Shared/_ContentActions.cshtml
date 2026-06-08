@@ -1,0 +1,77 @@
+@using System.Collections.Generic
+@using System.Linq
+@using System.Web.Mvc
+
+@{
+    var tmdbId = (int)ViewData["TmdbId"];
+    var tipo = (string)ViewData["Tipo"];
+    var favoritos = ViewBag.FavoritosIds as HashSet<int> ?? new HashSet<int>();
+    var listas = ViewBag.ListasPerfil as IEnumerable<SelectListItem> ?? new List<SelectListItem>();
+    var listasContenidoKeys = ViewBag.ListasContenidoKeys as HashSet<string> ?? new HashSet<string>();
+    var esFavorito = favoritos.Contains(tmdbId);
+}
+
+<div class="content-actions">
+    @if (Session["PerfilID"] != null)
+    {
+        using (Html.BeginForm("ToggleFavorito", "MiPerfil", FormMethod.Post, new { @class = "content-action-form" }))
+        {
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="tmdbId" value="@tmdbId" />
+            <input type="hidden" name="tipo" value="@tipo" />
+            <input type="hidden" name="returnUrl" value="@Request.RawUrl" />
+            <button type="submit" class="favorite-button @(esFavorito ? "is-favorite" : "")" title="Agregar a favoritos">
+                <svg class="favorite-icon" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+                </svg>
+            </button>
+        }
+
+        <div class="dropdown content-list-dropdown">
+            <button class="btn btn-outline-light btn-sm w-100 dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                Agregar a lista
+            </button>
+            <div class="dropdown-menu dropdown-menu-dark content-list-menu">
+                @if (listas.Any())
+                {
+                    foreach (var lista in listas)
+                    {
+                        var yaAgregada = listasContenidoKeys.Contains(lista.Value + ":" + tmdbId);
+                        using (Html.BeginForm("AgregarALista", "MiPerfil", FormMethod.Post, new { @class = "content-list-menu-form" }))
+                        {
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="listaId" value="@lista.Value" />
+                            <input type="hidden" name="tmdbId" value="@tmdbId" />
+                            <input type="hidden" name="tipo" value="@tipo" />
+                            <input type="hidden" name="returnUrl" value="@Request.RawUrl" />
+                            <button type="submit" class="dropdown-item @(yaAgregada ? "list-item-added" : "")">
+                                @lista.Text
+                                @if (yaAgregada)
+                                {
+                                    <span class="list-added-label">Agregada</span>
+                                }
+                            </button>
+                        }
+                    }
+                    <div class="dropdown-divider"></div>
+                }
+                else
+                {
+                    <span class="dropdown-item-text text-muted">No tenés listas creadas.</span>
+                    <div class="dropdown-divider"></div>
+                }
+
+                @using (Html.BeginForm("CrearListaYAgregar", "MiPerfil", FormMethod.Post, new { @class = "content-list-create-form" }))
+                {
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="tmdbId" value="@tmdbId" />
+                    <input type="hidden" name="tipo" value="@tipo" />
+                    <input type="hidden" name="returnUrl" value="@Request.RawUrl" />
+                    <label class="content-list-create-label">Crear lista nueva</label>
+                    <input type="text" name="nombreLista" class="form-control form-control-sm content-list-create-input" placeholder="Nombre de la lista" required />
+                    <button type="submit" class="btn btn-danger btn-sm w-100 mt-2">Crear y agregar</button>
+                }
+            </div>
+        </div>
+    }
+</div>

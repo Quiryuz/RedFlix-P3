@@ -1,0 +1,55 @@
+@model RedFlix.Models.ProfileViewModel
+
+@{
+    ViewBag.Title = "Crear perfil";
+    ViewBag.ModuleTitle = "Crear perfil";
+    ViewBag.ModuleSubtitle = "Agregá un perfil a tu cuenta";
+    ViewBag.ShowCreate = false;
+}
+
+@Html.Partial("_ModuleHeader")
+
+<div class="module-card">
+    @using (Html.BeginForm())
+    {
+        @Html.AntiForgeryToken()
+
+        <div class="module-form">
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.Nombre)
+                @Html.TextBoxFor(model => model.Nombre, new { @class = "form-control", placeholder = "Nombre del perfil" })
+                @Html.ValidationMessageFor(model => model.Nombre, "", new { @class = "text-danger" })
+            </div>
+
+            <div class="form-group">
+                <label>Icono</label>
+                <div class="profile-icon-options">
+                    @foreach (var icono in Model.IconosDisponibles)
+                    {
+                        <label class="profile-icon-option">
+                            <input type="radio" name="Icono" value="@icono" @(Model.Icono == icono ? "checked" : "") />
+                            <span class="profile-avatar profile-avatar-sm profile-avatar-@icono"></span>
+                        </label>
+                    }
+                </div>
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.ContrasenaPerfil)
+                @Html.PasswordFor(model => model.ContrasenaPerfil, new { @class = "form-control", placeholder = "Opcional" })
+                <small class="text-muted">Podés dejarla vacía si no querés proteger este perfil.</small>
+            </div>
+
+            <div class="module-form-actions">
+                <input type="submit" value="Guardar" class="btn btn-danger" />
+                @Html.ActionLink("Volver", "Index", null, new { @class = "btn btn-outline-light" })
+            </div>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}
