@@ -38,7 +38,7 @@
                 @Html.ActionLink("RedFlix", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })
             }
 
-            <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" title="Alternar navegación" aria-controls="navbarSupportedContent"
+            <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" title="Alternar navegacion" aria-controls="navbarSupportedContent"
                     aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
@@ -49,7 +49,7 @@
                     <li>@Html.ActionLink("Inicio", "Index", "Home", new { area = "" }, new { @class = "nav-link" })</li>
                     @if (puedePeliculas)
                     {
-                        <li>@Html.ActionLink("Películas", "Index", "Peliculas", new { area = "" }, new { @class = "nav-link" })</li>
+                        <li>@Html.ActionLink("Peliculas", "Index", "Peliculas", new { area = "" }, new { @class = "nav-link" })</li>
                     }
                     @if (puedeSeries)
                     {
@@ -69,7 +69,7 @@
                                role="button"
                                data-bs-toggle="dropdown"
                                aria-expanded="false">
-                                Administración
+                                Administracion
                             </a>
 
                             <ul class="dropdown-menu dropdown-menu-dark">
@@ -118,7 +118,7 @@
             <div class="navbar-auth d-flex align-items-center gap-3">
                 @if (debeElegirPerfil)
                 {
-                    <span class="navbar-user">Seleccioná un perfil para continuar</span>
+                    <span class="navbar-user">Selecciona un perfil para continuar</span>
                 }
                 else if (Session["Nombre"] != null)
                 {
@@ -127,17 +127,17 @@
                     {
                         <span class="navbar-user">Perfil: @Session["PerfilNombre"]</span>
                     }
-                    <a href="@Url.Action("Index", "MiPerfil")" class="btn btn-outline-light btn-sm">
+                    <a href="@Url.Action("Menu", "MiPerfil")" class="btn btn-outline-light btn-sm">
                         Mi perfil
                     </a>
                     <a href="@Url.Action("Logout", "Login")" class="btn btn-outline-light btn-sm">
-                        Cerrar sesión
+                        Cerrar sesion
                     </a>
                 }
                 else
                 {
                     <a href="@Url.Action("Index", "Login")" class="btn btn-danger btn-sm">
-                        Iniciar sesión
+                        Iniciar sesion
                     </a>
                 }
             </div>

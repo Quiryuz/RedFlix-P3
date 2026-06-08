@@ -108,7 +108,7 @@ namespace RedFlix.Controllers
             }
             catch (Exception ex)
             {
-                ViewBag.Error = "Error en la búsqueda: " + ex.Message;
+                ViewBag.Error = "Error en la busqueda: " + ex.Message;
                 return View(new System.Collections.Generic.List<TmdbTvResult>());
             }
         }

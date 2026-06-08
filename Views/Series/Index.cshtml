@@ -5,7 +5,7 @@
 
 <div class="catalog-header">
     <h1 class="catalog-title">@ViewBag.Title</h1>
-    <p class="catalog-subtitle">Explorá series desde TheMovieDB</p>
+    <p class="catalog-subtitle">Explora series desde TheMovieDB</p>
 </div>
 
 <div class="catalog-toolbar">
@@ -44,7 +44,7 @@ else
                             {
                                 @item.FirstAirDate.Substring(0, Math.Min(4, item.FirstAirDate.Length))
                             }
-                            · ★ @item.VoteAverage.ToString("0.0")
+                        - Puntaje @item.VoteAverage.ToString("0.0")
                         </p>
                         <p class="catalog-overview">@item.Overview</p>
                     </div>

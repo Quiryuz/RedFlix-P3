@@ -26,7 +26,7 @@ namespace RedFlix.Controllers
             try
             {
                 var response = await _tmdb.GetPopularMoviesAsync();
-                ViewBag.Titulo = "Películas populares";
+                ViewBag.Titulo = "Peliculas populares";
                 LoadProfileContentState();
                 return View(response.Results);
             }
@@ -48,7 +48,7 @@ namespace RedFlix.Controllers
             try
             {
                 var response = await _tmdb.GetTrendingMoviesAsync();
-                ViewBag.Titulo = "Películas en tendencia";
+                ViewBag.Titulo = "Peliculas en tendencia";
                 LoadProfileContentState();
                 return View("Index", response.Results);
             }
@@ -80,7 +80,7 @@ namespace RedFlix.Controllers
             }
             catch (Exception ex)
             {
-                ViewBag.Error = "No se pudo cargar la película: " + ex.Message;
+                ViewBag.Error = "No se pudo cargar la pelicula: " + ex.Message;
                 return RedirectToAction("Index");
             }
         }
@@ -108,7 +108,7 @@ namespace RedFlix.Controllers
             }
             catch (Exception ex)
             {
-                ViewBag.Error = "Error en la búsqueda: " + ex.Message;
+                ViewBag.Error = "Error en la busqueda: " + ex.Message;
                 return View(new System.Collections.Generic.List<TmdbMovieResult>());
             }
         }

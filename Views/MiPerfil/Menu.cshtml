@@ -1,0 +1,68 @@
+@model RedFlix.Models.ProfileViewModel
+
+@{
+    ViewBag.Title = "Mi perfil";
+    ViewBag.ModuleTitle = "Mi perfil";
+    ViewBag.ModuleSubtitle = "Panel del perfil activo";
+    ViewBag.ShowCreate = false;
+}
+
+@Html.Partial("_ModuleHeader")
+
+<div class="module-card mb-4">
+    <div class="profile-detail">
+        <div class="profile-avatar profile-avatar-lg profile-avatar-@Model.Icono"></div>
+        <dl class="dl-horizontal module-details">
+            <dt>Perfil activo</dt>
+            <dd>@Model.Nombre</dd>
+
+            <dt>Cuenta</dt>
+            <dd>@Model.UsuarioNombre</dd>
+
+            <dt>Email</dt>
+            <dd>@Model.UsuarioMail</dd>
+        </dl>
+    </div>
+</div>
+
+<div class="module-card module-card-table">
+    <div class="table-responsive">
+        <table class="table module-table">
+            <thead>
+                <tr>
+                    <th>Seccion</th>
+                    <th>Resumen</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Mis listas</td>
+                    <td>@ViewBag.TotalListas listas creadas para este perfil.</td>
+                    <td class="module-actions">@Html.ActionLink("Ver listas", "Listas", null, new { @class = "module-action" })</td>
+                </tr>
+                <tr>
+                    <td>Favoritos</td>
+                    <td>@ViewBag.TotalFavoritos contenidos marcados como favoritos.</td>
+                    <td class="module-actions">@Html.ActionLink("Ver favoritos", "Favoritos", null, new { @class = "module-action" })</td>
+                </tr>
+                <tr>
+                    <td>Datos de cuenta</td>
+                    <td>Informacion general del usuario logueado.</td>
+                    <td class="module-actions">@Html.ActionLink("Ver cuenta", "Cuenta", null, new { @class = "module-action" })</td>
+                </tr>
+                <tr>
+                    <td>Informacion del perfil</td>
+                    <td>Nombre, icono y seguridad del perfil activo.</td>
+                    <td class="module-actions">@Html.ActionLink("Ver perfil", "Details", new { id = Model.ID }, new { @class = "module-action" })</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="module-footer-links mt-4">
+    @Html.ActionLink("Editar perfil", "Edit", new { id = Model.ID }, new { @class = "btn btn-danger btn-sm" })
+    @Html.ActionLink("Cambiar perfil", "Index", null, new { @class = "btn btn-outline-light btn-sm" })
+    @Html.ActionLink("Crear perfil", "Create", null, new { @class = "module-back-link" })
+</div>

@@ -332,6 +332,7 @@
     <Content Include="Views\MiPerfil\Index.cshtml" />
     <Content Include="Views\MiPerfil\CrearLista.cshtml" />
     <Content Include="Views\MiPerfil\Listas.cshtml" />
+    <Content Include="Views\MiPerfil\Menu.cshtml" />
     <Content Include="Views\Series\Buscar.cshtml" />
     <Content Include="Views\Series\Detalle.cshtml" />
     <Content Include="Views\Series\Index.cshtml" />

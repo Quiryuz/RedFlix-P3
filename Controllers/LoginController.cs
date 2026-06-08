@@ -36,7 +36,7 @@ namespace RedFlix.Controllers
                 return RedirectToAction("Index", "MiPerfil");
             }
 
-            ViewBag.Error = "Email o contraseña incorrectos";
+            ViewBag.Error = "Email o contrasena incorrectos";
             return View();
         }
 

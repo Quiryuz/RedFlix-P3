@@ -14,7 +14,7 @@ namespace RedFlix.Models
         [Display(Name = "Icono")]
         public string Icono { get; set; }
 
-        [Display(Name = "Contraseña del perfil")]
+        [Display(Name = "Contrasena del perfil")]
         public string ContrasenaPerfil { get; set; }
 
         public int UsuarioID { get; set; }

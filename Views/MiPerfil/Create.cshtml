@@ -3,7 +3,7 @@
 @{
     ViewBag.Title = "Crear perfil";
     ViewBag.ModuleTitle = "Crear perfil";
-    ViewBag.ModuleSubtitle = "Agregá un perfil a tu cuenta";
+    ViewBag.ModuleSubtitle = "Agrega un perfil a tu cuenta";
     ViewBag.ShowCreate = false;
 }
 
@@ -39,7 +39,7 @@
             <div class="form-group">
                 @Html.LabelFor(model => model.ContrasenaPerfil)
                 @Html.PasswordFor(model => model.ContrasenaPerfil, new { @class = "form-control", placeholder = "Opcional" })
-                <small class="text-muted">Podés dejarla vacía si no querés proteger este perfil.</small>
+                <small class="text-muted">Podes dejarla vacia si no queres proteger este perfil.</small>
             </div>
 
             <div class="module-form-actions">

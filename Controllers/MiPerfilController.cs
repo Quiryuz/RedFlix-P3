@@ -33,6 +33,20 @@ namespace RedFlix.Controllers
             return View(perfiles);
         }
 
+        public ActionResult Menu()
+        {
+            var perfil = GetCurrentProfile();
+            if (perfil == null)
+            {
+                return RedirectToAction("Index");
+            }
+
+            ViewBag.TotalListas = db.listas.Count(l => l.perfilID == perfil.ID);
+            ViewBag.TotalFavoritos = db.favoritos.Count(f => f.perfilID == perfil.ID);
+
+            return View(_profileService.ToViewModel(perfil));
+        }
+
         public ActionResult Seleccionar(int id)
         {
             var usuarioId = GetCurrentUserId();

@@ -3,7 +3,7 @@
 @{
     ViewBag.Title = "Editar perfil";
     ViewBag.ModuleTitle = "Editar perfil";
-    ViewBag.ModuleSubtitle = "Actualizá el nombre, icono o contraseña";
+    ViewBag.ModuleSubtitle = "Actualiza el nombre, icono o contrasena";
     ViewBag.ShowCreate = false;
 }
 
@@ -40,7 +40,7 @@
             <div class="form-group">
                 @Html.LabelFor(model => model.ContrasenaPerfil)
                 @Html.PasswordFor(model => model.ContrasenaPerfil, new { @class = "form-control", placeholder = "Opcional" })
-                <small class="text-muted">Si dejás el campo vacío, el perfil quedará sin contraseña.</small>
+                <small class="text-muted">Si dejas el campo vacio, el perfil quedara sin contrasena.</small>
             </div>
 
             <div class="module-form-actions">

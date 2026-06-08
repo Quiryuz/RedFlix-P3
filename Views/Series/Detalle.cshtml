@@ -18,9 +18,9 @@
                     }
                     @if (Model.NumberOfSeasons.HasValue)
                     {
-                        <span> · @Model.NumberOfSeasons temporadas</span>
+                        <span> - @Model.NumberOfSeasons temporadas</span>
                     }
-                    <span> · ★ @Model.VoteAverage.ToString("0.0")</span>
+                    <span> - Puntaje @Model.VoteAverage.ToString("0.0")</span>
                 </p>
                 @if (Model.Genres != null && Model.Genres.Any())
                 {
@@ -30,7 +30,7 @@
                 <div class="detail-actions">
                     @Html.Partial("_ContentActions", null, new ViewDataDictionary(ViewData) { { "TmdbId", Model.Id }, { "Tipo", "Serie" } })
                 </div>
-                @Html.ActionLink("← Volver al catálogo", "Index", "Series", null, new { @class = "btn btn-outline-light btn-sm mt-2" })
+                @Html.ActionLink("<- Volver al catalogo", "Index", "Series", null, new { @class = "btn btn-outline-light btn-sm mt-2" })
             </div>
         </div>
     </div>

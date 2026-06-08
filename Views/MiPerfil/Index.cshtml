@@ -5,11 +5,11 @@
 }
 
 <section class="profile-selection-page">
-    <h1>¿Quién está mirando?</h1>
+    <h1>Quien esta mirando?</h1>
 
     @if (Model == null || !Model.Any())
     {
-        <p class="text-muted">Aún no tenés perfiles creados.</p>
+        <p class="text-muted">Aun no tenes perfiles creados.</p>
         @Html.ActionLink("Crear perfil", "Create", null, new { @class = "btn btn-danger btn-sm mt-3" })
     }
     else
