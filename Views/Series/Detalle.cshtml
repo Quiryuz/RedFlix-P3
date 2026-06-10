@@ -29,6 +29,7 @@
                 <p>@Model.Overview</p>
                 <div class="detail-actions">
                     @Html.Partial("_ContentActions", null, new ViewDataDictionary(ViewData) { { "TmdbId", Model.Id }, { "Tipo", "Serie" } })
+                    @Html.Partial("_RatingActions", null, new ViewDataDictionary(ViewData) { { "TmdbId", Model.Id }, { "Tipo", "Serie" } })
                 </div>
                 @Html.ActionLink("<- Volver al catalogo", "Index", "Series", null, new { @class = "btn btn-outline-light btn-sm mt-2" })
             </div>

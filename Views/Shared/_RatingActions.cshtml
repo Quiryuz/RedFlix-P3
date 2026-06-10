@@ -1,0 +1,45 @@
+@{
+    var tmdbId = (int)ViewData["TmdbId"];
+    var tipo = (string)ViewData["Tipo"];
+    var calificacion = ViewBag.CalificacionPersonal is int ? (int)ViewBag.CalificacionPersonal : 0;
+    var textoCalificacion = calificacion > 0
+        ? (calificacion / 2.0).ToString("0.0") + " / 5"
+        : "Sin calificar";
+}
+
+@if (Session["PerfilID"] != null)
+{
+    <div class="rating-panel">
+        <span class="rating-label">Tu calificacion</span>
+        <div class="rating-stars" aria-label="Calificacion personal">
+            @for (var estrella = 1; estrella <= 5; estrella++)
+            {
+                var halfValue = (estrella * 2) - 1;
+                var fullValue = estrella * 2;
+                var halfText = (halfValue / 2.0).ToString("0.0") + " estrellas";
+                var fullText = (fullValue / 2.0).ToString("0.0") + " estrellas";
+                <span class="rating-star @(calificacion >= halfValue ? "is-half-active" : "") @(calificacion >= fullValue ? "is-full-active" : "")">
+                    @using (Html.BeginForm("Calificar", "MiPerfil", FormMethod.Post, new { @class = "rating-form rating-form-half" }))
+                    {
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="tmdbId" value="@tmdbId" />
+                        <input type="hidden" name="tipo" value="@tipo" />
+                        <input type="hidden" name="puntaje" value="@halfValue" />
+                        <input type="hidden" name="returnUrl" value="@Request.RawUrl" />
+                        <button type="submit" title="@halfText" aria-label="@halfText"></button>
+                    }
+                    @using (Html.BeginForm("Calificar", "MiPerfil", FormMethod.Post, new { @class = "rating-form rating-form-full" }))
+                    {
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="tmdbId" value="@tmdbId" />
+                        <input type="hidden" name="tipo" value="@tipo" />
+                        <input type="hidden" name="puntaje" value="@fullValue" />
+                        <input type="hidden" name="returnUrl" value="@Request.RawUrl" />
+                        <button type="submit" title="@fullText" aria-label="@fullText"></button>
+                    }
+                </span>
+            }
+        </div>
+        <span class="rating-current">@textoCalificacion</span>
+    </div>
+}

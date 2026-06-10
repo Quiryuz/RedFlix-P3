@@ -76,6 +76,7 @@ namespace RedFlix.Controllers
             {
                 var serie = await _tmdb.GetSeriesDetailAsync(id.Value);
                 LoadProfileContentState();
+                LoadProfileRating(id.Value, "Serie");
                 return View(serie);
             }
             catch (Exception ex)
@@ -146,6 +147,27 @@ namespace RedFlix.Controllers
                     .Where(c => listaIds.Contains(c.listaID) && c.tipo == "Serie")
                     .Select(c => c.listaID + ":" + c.tmdbID)
                     .ToList());
+        }
+
+        private void LoadProfileRating(int tmdbId, string tipo)
+        {
+            ViewBag.CalificacionPersonal = 0;
+
+            if (Session["PerfilID"] == null)
+            {
+                return;
+            }
+
+            var perfilId = (int)Session["PerfilID"];
+            var calificacion = db.calificaciones.FirstOrDefault(c =>
+                c.perfilID == perfilId &&
+                c.tmdbID == tmdbId &&
+                c.tipo == tipo);
+
+            if (calificacion != null)
+            {
+                ViewBag.CalificacionPersonal = calificacion.puntaje;
+            }
         }
 
         private ActionResult RedirectToProfileSelectionIfNeeded()

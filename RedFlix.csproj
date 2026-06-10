@@ -263,6 +263,7 @@
     <Content Include="Views\Shared\_Layout.cshtml" />
     <Content Include="Views\Shared\_ModuleHeader.cshtml" />
     <Content Include="Views\Shared\_ContentActions.cshtml" />
+    <Content Include="Views\Shared\_RatingActions.cshtml" />
     <Content Include="Views\Shared\_RolePermissions.cshtml" />
     <Content Include="Views\Shared\_RolePermissionsReadOnly.cshtml" />
     <Content Include="Views\Home\AccessDenied.cshtml" />

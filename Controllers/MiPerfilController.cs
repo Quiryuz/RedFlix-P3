@@ -326,6 +326,48 @@ namespace RedFlix.Controllers
             return RedirectToAction("DetalleLista", new { id = lista.ID });
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Calificar(int tmdbId, string tipo, int puntaje, string returnUrl)
+        {
+            var perfil = GetCurrentProfile();
+            if (perfil == null)
+            {
+                return RedirectToAction("Index");
+            }
+
+            if (tmdbId <= 0 || string.IsNullOrWhiteSpace(tipo) || puntaje < 1 || puntaje > 10)
+            {
+                return RedirectToLocal(returnUrl);
+            }
+
+            var calificacion = db.calificaciones.FirstOrDefault(c =>
+                c.perfilID == perfil.ID &&
+                c.tmdbID == tmdbId &&
+                c.tipo == tipo);
+
+            if (calificacion == null)
+            {
+                db.calificaciones.Add(new calificaciones
+                {
+                    perfilID = perfil.ID,
+                    tmdbID = tmdbId,
+                    tipo = tipo,
+                    puntaje = puntaje,
+                    fechaCalificacion = System.DateTime.Now
+                });
+            }
+            else
+            {
+                calificacion.puntaje = puntaje;
+                calificacion.fechaCalificacion = System.DateTime.Now;
+                db.Entry(calificacion).State = EntityState.Modified;
+            }
+
+            db.SaveChanges();
+            return RedirectToLocal(returnUrl);
+        }
+
         public ActionResult Cuenta()
         {
             var usuarioId = GetCurrentUserId();
