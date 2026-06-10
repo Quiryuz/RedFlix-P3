@@ -9,11 +9,11 @@ namespace RedFlix.Services
 {
     public class PermissionService
     {
-        private readonly RedFlixIIIEntities _db = new RedFlixIIIEntities();
+        private readonly RedFlixIIIEntities _baseDatos = new RedFlixIIIEntities();
 
-        public void EnsurePermissionCatalog()
+        public void AsegurarCatalogoPermisos()
         {
-            var existentes = _db.permisos.Select(p => p.Nombre).ToList();
+            var existentes = _baseDatos.permisos.Select(p => p.Nombre).ToList();
             var faltantes = new List<permisos>();
 
             foreach (var entidad in PermissionKeys.PermisosPorEntidad)
@@ -30,16 +30,16 @@ namespace RedFlix.Services
 
             if (faltantes.Any())
             {
-                _db.permisos.AddRange(faltantes);
-                _db.SaveChanges();
+                _baseDatos.permisos.AddRange(faltantes);
+                _baseDatos.SaveChanges();
             }
 
-            EnsureDefaultRoleAssignments();
+            AsegurarPermisosRolesBase();
         }
 
-        public List<string> GetPermissionNamesForRole(int rolId)
+        public List<string> ObtenerNombresPermisosPorRol(int rolId)
         {
-            var rol = _db.Roles.Include(r => r.permisos).FirstOrDefault(r => r.ID == rolId);
+            var rol = _baseDatos.Roles.Include(r => r.permisos).FirstOrDefault(r => r.ID == rolId);
             if (rol == null)
             {
                 return new List<string>();
@@ -48,14 +48,14 @@ namespace RedFlix.Services
             return rol.permisos.Select(p => p.Nombre).ToList();
         }
 
-        public List<PermissionGroupViewModel> BuildPermissionGroups(int? rolId = null)
+        public List<PermissionGroupViewModel> ConstruirGruposPermisos(int? rolId = null)
         {
-            var todos = _db.permisos.OrderBy(p => p.Nombre).ToList();
+            var todos = _baseDatos.permisos.OrderBy(p => p.Nombre).ToList();
             var asignados = new HashSet<string>();
 
             if (rolId.HasValue)
             {
-                asignados = new HashSet<string>(GetPermissionNamesForRole(rolId.Value));
+                asignados = new HashSet<string>(ObtenerNombresPermisosPorRol(rolId.Value));
             }
 
             var grupos = new List<PermissionGroupViewModel>();
@@ -65,7 +65,7 @@ namespace RedFlix.Services
                 var grupo = new PermissionGroupViewModel
                 {
                     Entidad = entidad.Key,
-                    EntidadDisplay = GetEntityDisplayName(entidad.Key),
+                    EntidadDisplay = ObtenerNombreEntidad(entidad.Key),
                     Permisos = new List<PermissionItemViewModel>()
                 };
 
@@ -96,15 +96,15 @@ namespace RedFlix.Services
             return grupos;
         }
 
-        public void AssignPermissionsToRole(int rolId, IEnumerable<int> permisoIds)
+        public void AsignarPermisosARol(int rolId, IEnumerable<int> permisoIds)
         {
-            var rol = _db.Roles.Include(r => r.permisos).FirstOrDefault(r => r.ID == rolId);
+            var rol = _baseDatos.Roles.Include(r => r.permisos).FirstOrDefault(r => r.ID == rolId);
             if (rol == null)
             {
                 return;
             }
 
-            var seleccionados = _db.permisos.Where(p => permisoIds.Contains(p.ID)).ToList();
+            var seleccionados = _baseDatos.permisos.Where(p => permisoIds.Contains(p.ID)).ToList();
             rol.permisos.Clear();
 
             foreach (var permiso in seleccionados)
@@ -112,21 +112,21 @@ namespace RedFlix.Services
                 rol.permisos.Add(permiso);
             }
 
-            _db.SaveChanges();
+            _baseDatos.SaveChanges();
         }
 
-        private void EnsureDefaultRoleAssignments()
+        private void AsegurarPermisosRolesBase()
         {
-            var admin = _db.Roles.Include(r => r.permisos).FirstOrDefault(r => r.Nombre == "Administrador");
+            var admin = _baseDatos.Roles.Include(r => r.permisos).FirstOrDefault(r => r.Nombre == "Administrador");
             if (admin == null)
             {
                 admin = new Roles { Nombre = "Administrador" };
-                _db.Roles.Add(admin);
-                _db.SaveChanges();
-                admin = _db.Roles.Include(r => r.permisos).First(r => r.ID == admin.ID);
+                _baseDatos.Roles.Add(admin);
+                _baseDatos.SaveChanges();
+                admin = _baseDatos.Roles.Include(r => r.permisos).First(r => r.ID == admin.ID);
             }
 
-            var todos = _db.permisos.ToList();
+            var todos = _baseDatos.permisos.ToList();
 
             if (!admin.permisos.Any())
             {
@@ -136,13 +136,13 @@ namespace RedFlix.Services
                 }
             }
 
-            var usuario = _db.Roles.Include(r => r.permisos).FirstOrDefault(r => r.Nombre == "Usuario");
+            var usuario = _baseDatos.Roles.Include(r => r.permisos).FirstOrDefault(r => r.Nombre == "Usuario");
             if (usuario == null)
             {
                 usuario = new Roles { Nombre = "Usuario" };
-                _db.Roles.Add(usuario);
-                _db.SaveChanges();
-                usuario = _db.Roles.Include(r => r.permisos).First(r => r.ID == usuario.ID);
+                _baseDatos.Roles.Add(usuario);
+                _baseDatos.SaveChanges();
+                usuario = _baseDatos.Roles.Include(r => r.permisos).First(r => r.ID == usuario.ID);
             }
 
             if (!usuario.permisos.Any())
@@ -158,10 +158,10 @@ namespace RedFlix.Services
                 }
             }
 
-            _db.SaveChanges();
+            _baseDatos.SaveChanges();
         }
 
-        private static string GetEntityDisplayName(string entidad)
+        private static string ObtenerNombreEntidad(string entidad)
         {
             switch (entidad)
             {

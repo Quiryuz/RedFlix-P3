@@ -47,6 +47,11 @@
                     <td class="module-actions">@Html.ActionLink("Ver favoritos", "Favoritos", null, new { @class = "module-action" })</td>
                 </tr>
                 <tr>
+                    <td>Mis calificaciones</td>
+                    <td>@ViewBag.TotalCalificaciones contenidos calificados por este perfil.</td>
+                    <td class="module-actions">@Html.ActionLink("Ver calificaciones", "MisCalificaciones", null, new { @class = "module-action" })</td>
+                </tr>
+                <tr>
                     <td>Datos de cuenta</td>
                     <td>Informacion general del usuario logueado.</td>
                     <td class="module-actions">@Html.ActionLink("Ver cuenta", "Cuenta", null, new { @class = "module-action" })</td>

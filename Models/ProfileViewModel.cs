@@ -42,4 +42,11 @@ namespace RedFlix.Models
         public string PerfilNombre { get; set; }
         public List<ContentItemViewModel> Contenidos { get; set; }
     }
+
+    public class CalificacionPerfilViewModel
+    {
+        public ContentItemViewModel Contenido { get; set; }
+        public int PuntajePersonal { get; set; }
+        public System.DateTime FechaCalificacion { get; set; }
+    }
 }

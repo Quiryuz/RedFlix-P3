@@ -173,6 +173,11 @@
     margin-bottom: 0.35rem;
 }
 
+.rating-summary {
+    color: #f5c542;
+    font-weight: 700;
+}
+
 .catalog-overview {
     color: #999;
     font-size: 0.8rem;
@@ -291,10 +296,12 @@
 }
 
 .rating-panel {
+    display: block;
     background: rgba(20, 20, 20, 0.92);
     border: 1px solid #333;
     border-radius: 10px;
     padding: 0.85rem;
+    margin: 0;
 }
 
 .rating-label {
@@ -307,77 +314,72 @@
 }
 
 .rating-stars {
-    display: flex;
+    display: grid;
+    grid-template-columns: repeat(5, 26px);
     align-items: center;
-    gap: 0.25rem;
+    gap: 2px;
+    line-height: 1;
+    width: max-content;
+    max-width: 140px;
+    font-size: 0;
 }
 
 .rating-star {
     position: relative;
-    width: 34px;
-    height: 34px;
-    display: inline-block;
-    color: #3a3a3a;
+    width: 26px;
+    height: 26px;
+    display: block;
+    overflow: hidden;
 }
 
-.rating-star::before,
-.rating-star::after {
-    content: "\2605";
+.rating-star-svg {
     position: absolute;
-    top: 50%;
-    left: 50%;
-    font-size: 2rem;
-    line-height: 1;
-    transform: translate(-50%, -50%);
+    inset: 0;
+    width: 26px;
+    height: 26px;
+    pointer-events: none;
 }
 
-.rating-star::before {
-    color: #3a3a3a;
+.rating-star-bg {
+    fill: #3a3a3a;
+    stroke: #666;
+    stroke-width: 1px;
 }
 
-.rating-star::after {
-    color: #f5c542;
-    text-shadow: 0 0 12px rgba(245, 197, 66, 0.45);
+.rating-star-fill {
+    fill: #f5c542;
+    filter: drop-shadow(0 0 8px rgba(245, 197, 66, 0.55));
     clip-path: inset(0 100% 0 0);
 }
 
-.rating-star.is-half-active::after {
-    clip-path: inset(0 50% 0 0);
-}
-
-.rating-star.is-full-active::after {
+.rating-star.is-full-active .rating-star-fill {
     clip-path: inset(0 0 0 0);
 }
 
-.rating-form {
+.rating-hit {
     position: absolute;
     top: 0;
     bottom: 0;
     z-index: 2;
+    display: block;
     margin: 0;
-}
-
-.rating-form-half {
-    left: 0;
-    width: 50%;
-}
-
-.rating-form-full {
-    right: 0;
-    width: 50%;
-}
-
-.rating-form button {
-    width: 100%;
-    height: 100%;
     border: 0;
     padding: 0;
+    min-width: 0;
+    max-width: none;
+    min-height: 0;
+    line-height: 1;
     background: transparent;
+    box-shadow: none;
+    appearance: none;
+    -webkit-appearance: none;
     cursor: pointer;
+    left: 0;
+    width: 100%;
 }
 
-.rating-star:hover::after,
-.rating-star:focus-within::after {
+.rating-star:hover .rating-star-fill,
+.rating-star:focus-within .rating-star-fill {
     clip-path: inset(0 0 0 0);
 }
 

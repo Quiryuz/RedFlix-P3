@@ -20,8 +20,8 @@ namespace RedFlix
 
             try
             {
-                new PermissionService().EnsurePermissionCatalog();
-                new ProfileService().EnsureProfilePasswordColumn();
+                new PermissionService().AsegurarCatalogoPermisos();
+                new ProfileService().AsegurarColumnaContrasenaPerfil();
             }
             catch
             {

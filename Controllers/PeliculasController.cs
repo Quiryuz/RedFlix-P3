@@ -12,23 +12,23 @@ namespace RedFlix.Controllers
     [AuthorizePermission(Entity = PermissionKeys.Peliculas)]
     public class PeliculasController : Controller
     {
-        private readonly TMDBService _tmdb = new TMDBService();
-        private readonly RedFlixIIIEntities db = new RedFlixIIIEntities();
+        private readonly TMDBService _servicioTmdb = new TMDBService();
+        private readonly RedFlixIIIEntities _baseDatos = new RedFlixIIIEntities();
 
         public async Task<ActionResult> Index()
         {
-            var profileRedirect = RedirectToProfileSelectionIfNeeded();
-            if (profileRedirect != null)
+            var redireccionPerfil = RedirigirSeleccionPerfilSiHaceFalta();
+            if (redireccionPerfil != null)
             {
-                return profileRedirect;
+                return redireccionPerfil;
             }
 
             try
             {
-                var response = await _tmdb.GetPopularMoviesAsync();
+                var respuesta = await _servicioTmdb.GetPopularMoviesAsync();
                 ViewBag.Titulo = "Peliculas populares";
-                LoadProfileContentState();
-                return View(response.Results);
+                CargarEstadoContenidoPerfil();
+                return View(respuesta.Results);
             }
             catch (Exception ex)
             {
@@ -39,18 +39,18 @@ namespace RedFlix.Controllers
 
         public async Task<ActionResult> Tendencias()
         {
-            var profileRedirect = RedirectToProfileSelectionIfNeeded();
-            if (profileRedirect != null)
+            var redireccionPerfil = RedirigirSeleccionPerfilSiHaceFalta();
+            if (redireccionPerfil != null)
             {
-                return profileRedirect;
+                return redireccionPerfil;
             }
 
             try
             {
-                var response = await _tmdb.GetTrendingMoviesAsync();
+                var respuesta = await _servicioTmdb.GetTrendingMoviesAsync();
                 ViewBag.Titulo = "Peliculas en tendencia";
-                LoadProfileContentState();
-                return View("Index", response.Results);
+                CargarEstadoContenidoPerfil();
+                return View("Index", respuesta.Results);
             }
             catch (Exception ex)
             {
@@ -61,10 +61,10 @@ namespace RedFlix.Controllers
 
         public async Task<ActionResult> Detalle(int? id)
         {
-            var profileRedirect = RedirectToProfileSelectionIfNeeded();
-            if (profileRedirect != null)
+            var redireccionPerfil = RedirigirSeleccionPerfilSiHaceFalta();
+            if (redireccionPerfil != null)
             {
-                return profileRedirect;
+                return redireccionPerfil;
             }
 
             if (id == null || id <= 0)
@@ -74,10 +74,10 @@ namespace RedFlix.Controllers
 
             try
             {
-                var movie = await _tmdb.GetMovieDetailAsync(id.Value);
-                LoadProfileContentState();
-                LoadProfileRating(id.Value, "Pelicula");
-                return View(movie);
+                var pelicula = await _servicioTmdb.GetMovieDetailAsync(id.Value);
+                CargarEstadoContenidoPerfil();
+                CargarCalificacionPerfil(id.Value, "Pelicula");
+                return View(pelicula);
             }
             catch (Exception ex)
             {
@@ -88,10 +88,10 @@ namespace RedFlix.Controllers
 
         public async Task<ActionResult> Buscar(string q)
         {
-            var profileRedirect = RedirectToProfileSelectionIfNeeded();
-            if (profileRedirect != null)
+            var redireccionPerfil = RedirigirSeleccionPerfilSiHaceFalta();
+            if (redireccionPerfil != null)
             {
-                return profileRedirect;
+                return redireccionPerfil;
             }
 
             ViewBag.Query = q;
@@ -103,9 +103,9 @@ namespace RedFlix.Controllers
 
             try
             {
-                var response = await _tmdb.SearchMoviesAsync(q);
-                LoadProfileContentState();
-                return View(response.Results);
+                var respuesta = await _servicioTmdb.SearchMoviesAsync(q);
+                CargarEstadoContenidoPerfil();
+                return View(respuesta.Results);
             }
             catch (Exception ex)
             {
@@ -114,7 +114,7 @@ namespace RedFlix.Controllers
             }
         }
 
-        private void LoadProfileContentState()
+        private void CargarEstadoContenidoPerfil()
         {
             if (Session["PerfilID"] == null)
             {
@@ -126,30 +126,30 @@ namespace RedFlix.Controllers
 
             var perfilId = (int)Session["PerfilID"];
             ViewBag.FavoritosIds = new HashSet<int>(
-                db.favoritos
+                _baseDatos.favoritos
                     .Where(f => f.perfilID == perfilId && f.tipo == "Pelicula")
                     .Select(f => f.tmdbID)
                     .ToList());
 
-            ViewBag.ListasPerfil = db.listas
+            ViewBag.ListasPerfil = _baseDatos.listas
                 .Where(l => l.perfilID == perfilId)
                 .OrderBy(l => l.nombre)
                 .Select(l => new SelectListItem { Value = l.ID.ToString(), Text = l.nombre })
                 .ToList();
 
-            var listaIds = db.listas
+            var listaIds = _baseDatos.listas
                 .Where(l => l.perfilID == perfilId)
                 .Select(l => l.ID)
                 .ToList();
 
             ViewBag.ListasContenidoKeys = new HashSet<string>(
-                db.listaContenido
+                _baseDatos.listaContenido
                     .Where(c => listaIds.Contains(c.listaID) && c.tipo == "Pelicula")
                     .Select(c => c.listaID + ":" + c.tmdbID)
                     .ToList());
         }
 
-        private void LoadProfileRating(int tmdbId, string tipo)
+        private void CargarCalificacionPerfil(int tmdbId, string tipo)
         {
             ViewBag.CalificacionPersonal = 0;
 
@@ -159,7 +159,7 @@ namespace RedFlix.Controllers
             }
 
             var perfilId = (int)Session["PerfilID"];
-            var calificacion = db.calificaciones.FirstOrDefault(c =>
+            var calificacion = _baseDatos.calificaciones.FirstOrDefault(c =>
                 c.perfilID == perfilId &&
                 c.tmdbID == tmdbId &&
                 c.tipo == tipo);
@@ -170,7 +170,7 @@ namespace RedFlix.Controllers
             }
         }
 
-        private ActionResult RedirectToProfileSelectionIfNeeded()
+        private ActionResult RedirigirSeleccionPerfilSiHaceFalta()
         {
             if (Session["UsuarioID"] != null && Session["PerfilID"] == null)
             {

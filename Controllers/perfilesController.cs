@@ -16,7 +16,7 @@ namespace RedFlix.Controllers
     public class perfilesController : Controller
     {
         private RedFlixIIIEntities db = new RedFlixIIIEntities();
-        private readonly ProfileService _profileService = new ProfileService();
+        private readonly ProfileService _servicioPerfiles = new ProfileService();
 
         // GET: perfiles
         public ActionResult Index()
@@ -37,7 +37,7 @@ namespace RedFlix.Controllers
             {
                 return HttpNotFound();
             }
-            ViewBag.ContrasenaPerfil = _profileService.GetProfilePassword(perfiles.ID);
+            ViewBag.ContrasenaPerfil = _servicioPerfiles.ObtenerContrasenaPerfil(perfiles.ID);
             return View(perfiles);
         }
 
@@ -45,7 +45,7 @@ namespace RedFlix.Controllers
         public ActionResult Create()
         {
             ViewBag.usuarioID = new SelectList(db.usuarios, "ID", "Nombre");
-            ViewBag.Iconos = ProfileService.DefaultIcons;
+            ViewBag.Iconos = ProfileService.IconosPredeterminados;
             return View();
         }
 
@@ -60,17 +60,17 @@ namespace RedFlix.Controllers
             {
                 if (string.IsNullOrWhiteSpace(perfiles.Icono))
                 {
-                    perfiles.Icono = ProfileService.DefaultIcons[0];
+                    perfiles.Icono = ProfileService.IconosPredeterminados[0];
                 }
 
                 db.perfiles.Add(perfiles);
                 db.SaveChanges();
-                _profileService.SaveProfilePassword(perfiles.ID, ContrasenaPerfil);
+                _servicioPerfiles.GuardarContrasenaPerfil(perfiles.ID, ContrasenaPerfil);
                 return RedirectToAction("Index");
             }
 
             ViewBag.usuarioID = new SelectList(db.usuarios, "ID", "Nombre", perfiles.usuarioID);
-            ViewBag.Iconos = ProfileService.DefaultIcons;
+            ViewBag.Iconos = ProfileService.IconosPredeterminados;
             return View(perfiles);
         }
 
@@ -87,8 +87,8 @@ namespace RedFlix.Controllers
                 return HttpNotFound();
             }
             ViewBag.usuarioID = new SelectList(db.usuarios, "ID", "Nombre", perfiles.usuarioID);
-            ViewBag.Iconos = ProfileService.DefaultIcons;
-            ViewBag.ContrasenaPerfil = _profileService.GetProfilePassword(perfiles.ID);
+            ViewBag.Iconos = ProfileService.IconosPredeterminados;
+            ViewBag.ContrasenaPerfil = _servicioPerfiles.ObtenerContrasenaPerfil(perfiles.ID);
             return View(perfiles);
         }
 
@@ -103,16 +103,16 @@ namespace RedFlix.Controllers
             {
                 if (string.IsNullOrWhiteSpace(perfiles.Icono))
                 {
-                    perfiles.Icono = ProfileService.DefaultIcons[0];
+                    perfiles.Icono = ProfileService.IconosPredeterminados[0];
                 }
 
                 db.Entry(perfiles).State = EntityState.Modified;
                 db.SaveChanges();
-                _profileService.SaveProfilePassword(perfiles.ID, ContrasenaPerfil);
+                _servicioPerfiles.GuardarContrasenaPerfil(perfiles.ID, ContrasenaPerfil);
                 return RedirectToAction("Index");
             }
             ViewBag.usuarioID = new SelectList(db.usuarios, "ID", "Nombre", perfiles.usuarioID);
-            ViewBag.Iconos = ProfileService.DefaultIcons;
+            ViewBag.Iconos = ProfileService.IconosPredeterminados;
             ViewBag.ContrasenaPerfil = ContrasenaPerfil;
             return View(perfiles);
         }
@@ -129,7 +129,7 @@ namespace RedFlix.Controllers
             {
                 return HttpNotFound();
             }
-            ViewBag.ContrasenaPerfil = _profileService.GetProfilePassword(perfiles.ID);
+            ViewBag.ContrasenaPerfil = _servicioPerfiles.ObtenerContrasenaPerfil(perfiles.ID);
             return View(perfiles);
         }
 
@@ -139,7 +139,7 @@ namespace RedFlix.Controllers
         public ActionResult DeleteConfirmed(int id)
         {
             perfiles perfiles = db.perfiles.Find(id);
-            RemoveProfileDependencies(id);
+            EliminarDependenciasPerfil(id);
             db.perfiles.Remove(perfiles);
             db.SaveChanges();
             return RedirectToAction("Index");
@@ -154,7 +154,7 @@ namespace RedFlix.Controllers
             base.Dispose(disposing);
         }
 
-        private void RemoveProfileDependencies(int perfilId)
+        private void EliminarDependenciasPerfil(int perfilId)
         {
             var listas = db.listas.Where(l => l.perfilID == perfilId).ToList();
             var listaIds = listas.Select(l => l.ID).ToList();

@@ -14,7 +14,7 @@ namespace RedFlix.Controllers
     public class RolesController : Controller
     {
         private readonly RedFlixIIIEntities db = new RedFlixIIIEntities();
-        private readonly PermissionService _permissionService = new PermissionService();
+        private readonly PermissionService _servicioPermisos = new PermissionService();
 
         public ActionResult Index()
         {
@@ -34,7 +34,7 @@ namespace RedFlix.Controllers
                 return HttpNotFound();
             }
 
-            ViewBag.PermissionGroups = _permissionService.BuildPermissionGroups(id);
+            ViewBag.PermissionGroups = _servicioPermisos.ConstruirGruposPermisos(id);
             return View(roles);
         }
 
@@ -70,7 +70,7 @@ namespace RedFlix.Controllers
                 return HttpNotFound();
             }
 
-            ViewBag.PermissionGroups = _permissionService.BuildPermissionGroups(id);
+            ViewBag.PermissionGroups = _servicioPermisos.ConstruirGruposPermisos(id);
             return View(roles);
         }
 
@@ -82,19 +82,19 @@ namespace RedFlix.Controllers
             {
                 db.Entry(roles).State = EntityState.Modified;
                 db.SaveChanges();
-                _permissionService.AssignPermissionsToRole(roles.ID, permisoIds ?? new int[0]);
+                _servicioPermisos.AsignarPermisosARol(roles.ID, permisoIds ?? new int[0]);
 
                 if (Session["RolID"] != null && Convert.ToInt32(Session["RolID"]) == roles.ID)
                 {
                     PermissionHelper.SetUserPermissions(
                         Session,
-                        _permissionService.GetPermissionNamesForRole(roles.ID));
+                        _servicioPermisos.ObtenerNombresPermisosPorRol(roles.ID));
                 }
 
                 return RedirectToAction("Index");
             }
 
-            ViewBag.PermissionGroups = _permissionService.BuildPermissionGroups(roles.ID);
+            ViewBag.PermissionGroups = _servicioPermisos.ConstruirGruposPermisos(roles.ID);
             return View(roles);
         }
 

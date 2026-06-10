@@ -1,0 +1,44 @@
+@model IEnumerable<RedFlix.Models.CalificacionPerfilViewModel>
+
+@{
+    ViewBag.Title = "Mis calificaciones";
+    ViewBag.ModuleTitle = "Mis calificaciones";
+    ViewBag.ModuleSubtitle = "Calificaciones del perfil activo: " + (ViewBag.PerfilActivo ?? "");
+    ViewBag.ShowCreate = false;
+}
+
+@Html.Partial("_ModuleHeader")
+
+<div class="module-footer-links mb-3">
+    @Html.ActionLink("Mis listas", "Listas", null, new { @class = "btn btn-outline-light btn-sm" })
+    @Html.ActionLink("Mis favoritos", "Favoritos", null, new { @class = "btn btn-outline-light btn-sm" })
+    @Html.ActionLink("Volver a mi perfil", "Menu", null, new { @class = "module-back-link" })
+</div>
+
+@if (Model == null || !Model.Any())
+{
+    <div class="module-card">
+        <p class="text-muted mb-0">Todavia no calificaste peliculas o series.</p>
+    </div>
+}
+else
+{
+    <div class="catalog-grid">
+        @foreach (var item in Model)
+        {
+            var contenido = item.Contenido;
+            var controller = contenido.Tipo == "Serie" ? "Series" : "Peliculas";
+            <div class="catalog-card">
+                <a href="@Url.Action("Detalle", controller, new { id = contenido.TmdbId })" class="catalog-card-link">
+                    <img src="@RedFlix.Services.TMDBService.GetPosterUrl(contenido.PosterPath)" alt="@contenido.Titulo" class="catalog-poster" />
+                    <div class="catalog-card-body">
+                        <h3>@contenido.Titulo</h3>
+                        <p class="catalog-meta">@contenido.Tipo - Puntaje TMDB @contenido.Puntaje.ToString("0.0")</p>
+                        <p class="catalog-meta rating-summary">Tu puntaje: @item.PuntajePersonal / 5</p>
+                        <p class="catalog-meta">Fecha: @item.FechaCalificacion.ToString("dd/MM/yyyy")</p>
+                    </div>
+                </a>
+            </div>
+        }
+    </div>
+}

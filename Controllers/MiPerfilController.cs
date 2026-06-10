@@ -12,12 +12,12 @@ namespace RedFlix.Controllers
     public class MiPerfilController : Controller
     {
         private readonly RedFlixIIIEntities db = new RedFlixIIIEntities();
-        private readonly ProfileService _profileService = new ProfileService();
-        private readonly TMDBService _tmdb = new TMDBService();
+        private readonly ProfileService _servicioPerfiles = new ProfileService();
+        private readonly TMDBService _servicioTmdb = new TMDBService();
 
         public ActionResult Index()
         {
-            var usuarioId = GetCurrentUserId();
+            var usuarioId = ObtenerUsuarioActualId();
             if (!usuarioId.HasValue)
             {
                 return RedirectToAction("Index", "Login");
@@ -27,7 +27,7 @@ namespace RedFlix.Controllers
                 .Include(p => p.usuarios)
                 .Where(p => p.usuarioID == usuarioId.Value)
                 .ToList()
-                .Select(p => _profileService.ToViewModel(p))
+                .Select(p => _servicioPerfiles.ConvertirAViewModel(p))
                 .ToList();
 
             return View(perfiles);
@@ -35,7 +35,7 @@ namespace RedFlix.Controllers
 
         public ActionResult Menu()
         {
-            var perfil = GetCurrentProfile();
+            var perfil = ObtenerPerfilActual();
             if (perfil == null)
             {
                 return RedirectToAction("Index");
@@ -43,13 +43,14 @@ namespace RedFlix.Controllers
 
             ViewBag.TotalListas = db.listas.Count(l => l.perfilID == perfil.ID);
             ViewBag.TotalFavoritos = db.favoritos.Count(f => f.perfilID == perfil.ID);
+            ViewBag.TotalCalificaciones = db.calificaciones.Count(c => c.perfilID == perfil.ID);
 
-            return View(_profileService.ToViewModel(perfil));
+            return View(_servicioPerfiles.ConvertirAViewModel(perfil));
         }
 
         public ActionResult Seleccionar(int id)
         {
-            var usuarioId = GetCurrentUserId();
+            var usuarioId = ObtenerUsuarioActualId();
             if (!usuarioId.HasValue)
             {
                 return RedirectToAction("Index", "Login");
@@ -68,7 +69,7 @@ namespace RedFlix.Controllers
 
         public ActionResult Listas()
         {
-            var perfil = GetCurrentProfile();
+            var perfil = ObtenerPerfilActual();
             if (perfil == null)
             {
                 return RedirectToAction("Index");
@@ -85,7 +86,7 @@ namespace RedFlix.Controllers
 
         public ActionResult CrearLista()
         {
-            var perfil = GetCurrentProfile();
+            var perfil = ObtenerPerfilActual();
             if (perfil == null)
             {
                 return RedirectToAction("Index");
@@ -98,7 +99,7 @@ namespace RedFlix.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult CrearLista([Bind(Include = "nombre")] listas lista)
         {
-            var perfil = GetCurrentProfile();
+            var perfil = ObtenerPerfilActual();
             if (perfil == null)
             {
                 return RedirectToAction("Index");
@@ -117,7 +118,7 @@ namespace RedFlix.Controllers
 
         public ActionResult EditarLista(int? id)
         {
-            var lista = GetOwnedList(id);
+            var lista = ObtenerListaPropia(id);
             if (lista == null)
             {
                 return id == null ? (ActionResult)new HttpStatusCodeResult(HttpStatusCode.BadRequest) : HttpNotFound();
@@ -130,7 +131,7 @@ namespace RedFlix.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult EditarLista([Bind(Include = "ID,nombre")] listas lista)
         {
-            var existente = GetOwnedList(lista.ID);
+            var existente = ObtenerListaPropia(lista.ID);
             if (existente == null)
             {
                 return HttpNotFound();
@@ -149,7 +150,7 @@ namespace RedFlix.Controllers
 
         public ActionResult EliminarLista(int? id)
         {
-            var lista = GetOwnedList(id);
+            var lista = ObtenerListaPropia(id);
             if (lista == null)
             {
                 return id == null ? (ActionResult)new HttpStatusCodeResult(HttpStatusCode.BadRequest) : HttpNotFound();
@@ -162,7 +163,7 @@ namespace RedFlix.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult EliminarListaConfirmed(int id)
         {
-            var lista = GetOwnedList(id);
+            var lista = ObtenerListaPropia(id);
             if (lista == null)
             {
                 return HttpNotFound();
@@ -177,13 +178,13 @@ namespace RedFlix.Controllers
 
         public async Task<ActionResult> DetalleLista(int? id)
         {
-            var lista = GetOwnedList(id);
+            var lista = ObtenerListaPropia(id);
             if (lista == null)
             {
                 return id == null ? (ActionResult)new HttpStatusCodeResult(HttpStatusCode.BadRequest) : HttpNotFound();
             }
 
-            var model = new UserListViewModel
+            var modelo = new UserListViewModel
             {
                 ID = lista.ID,
                 Nombre = lista.nombre,
@@ -194,15 +195,15 @@ namespace RedFlix.Controllers
 
             foreach (var contenido in db.listaContenido.Where(c => c.listaID == lista.ID).ToList())
             {
-                model.Contenidos.Add(await LoadContentItemAsync(contenido.tmdbID, contenido.tipo));
+                modelo.Contenidos.Add(await CargarContenidoAsync(contenido.tmdbID, contenido.tipo));
             }
 
-            return View(model);
+            return View(modelo);
         }
 
         public async Task<ActionResult> Favoritos()
         {
-            var perfil = GetCurrentProfile();
+            var perfil = ObtenerPerfilActual();
             if (perfil == null)
             {
                 return RedirectToAction("Index");
@@ -212,21 +213,50 @@ namespace RedFlix.Controllers
                 .Where(f => f.perfilID == perfil.ID)
                 .ToList();
 
-            var model = new System.Collections.Generic.List<ContentItemViewModel>();
+            var modelo = new System.Collections.Generic.List<ContentItemViewModel>();
             foreach (var favorito in favoritos)
             {
-                model.Add(await LoadContentItemAsync(favorito.tmdbID, favorito.tipo));
+                modelo.Add(await CargarContenidoAsync(favorito.tmdbID, favorito.tipo));
             }
 
             ViewBag.PerfilActivo = perfil.Nombre;
-            return View(model);
+            return View(modelo);
+        }
+
+        public async Task<ActionResult> MisCalificaciones()
+        {
+            var perfil = ObtenerPerfilActual();
+            if (perfil == null)
+            {
+                return RedirectToAction("Index");
+            }
+
+            var calificaciones = db.calificaciones
+                .Where(c => c.perfilID == perfil.ID)
+                .OrderByDescending(c => c.fechaCalificacion)
+                .ToList();
+
+            var modelo = new System.Collections.Generic.List<CalificacionPerfilViewModel>();
+
+            foreach (var calificacion in calificaciones)
+            {
+                modelo.Add(new CalificacionPerfilViewModel
+                {
+                    Contenido = await CargarContenidoAsync(calificacion.tmdbID, calificacion.tipo),
+                    PuntajePersonal = calificacion.puntaje,
+                    FechaCalificacion = calificacion.fechaCalificacion
+                });
+            }
+
+            ViewBag.PerfilActivo = perfil.Nombre;
+            return View(modelo);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult ToggleFavorito(int tmdbId, string tipo, string returnUrl)
         {
-            var perfil = GetCurrentProfile();
+            var perfil = ObtenerPerfilActual();
             if (perfil == null)
             {
                 return RedirectToAction("Index");
@@ -243,7 +273,7 @@ namespace RedFlix.Controllers
             }
 
             db.SaveChanges();
-            return RedirectToLocal(returnUrl);
+            return RedirigirLocal(returnUrl);
         }
 
         [HttpPost]
@@ -252,10 +282,10 @@ namespace RedFlix.Controllers
         {
             if (!listaId.HasValue)
             {
-                return RedirectToLocal(returnUrl);
+                return RedirigirLocal(returnUrl);
             }
 
-            var lista = GetOwnedList(listaId);
+            var lista = ObtenerListaPropia(listaId);
             if (lista == null)
             {
                 return HttpNotFound();
@@ -268,14 +298,14 @@ namespace RedFlix.Controllers
                 db.SaveChanges();
             }
 
-            return RedirectToLocal(returnUrl);
+            return RedirigirLocal(returnUrl);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult CrearListaYAgregar(string nombreLista, int tmdbId, string tipo, string returnUrl)
         {
-            var perfil = GetCurrentProfile();
+            var perfil = ObtenerPerfilActual();
             if (perfil == null)
             {
                 return RedirectToAction("Index");
@@ -283,7 +313,7 @@ namespace RedFlix.Controllers
 
             if (string.IsNullOrWhiteSpace(nombreLista))
             {
-                return RedirectToLocal(returnUrl);
+                return RedirigirLocal(returnUrl);
             }
 
             var lista = new listas
@@ -303,14 +333,14 @@ namespace RedFlix.Controllers
             });
 
             db.SaveChanges();
-            return RedirectToLocal(returnUrl);
+            return RedirigirLocal(returnUrl);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult QuitarDeLista(int listaId, int tmdbId, string tipo)
         {
-            var lista = GetOwnedList(listaId);
+            var lista = ObtenerListaPropia(listaId);
             if (lista == null)
             {
                 return HttpNotFound();
@@ -330,15 +360,15 @@ namespace RedFlix.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Calificar(int tmdbId, string tipo, int puntaje, string returnUrl)
         {
-            var perfil = GetCurrentProfile();
+            var perfil = ObtenerPerfilActual();
             if (perfil == null)
             {
                 return RedirectToAction("Index");
             }
 
-            if (tmdbId <= 0 || string.IsNullOrWhiteSpace(tipo) || puntaje < 1 || puntaje > 10)
+            if (tmdbId <= 0 || string.IsNullOrWhiteSpace(tipo) || puntaje < 1 || puntaje > 5)
             {
-                return RedirectToLocal(returnUrl);
+                return RedirigirLocal(returnUrl);
             }
 
             var calificacion = db.calificaciones.FirstOrDefault(c =>
@@ -365,12 +395,12 @@ namespace RedFlix.Controllers
             }
 
             db.SaveChanges();
-            return RedirectToLocal(returnUrl);
+            return RedirigirLocal(returnUrl);
         }
 
         public ActionResult Cuenta()
         {
-            var usuarioId = GetCurrentUserId();
+            var usuarioId = ObtenerUsuarioActualId();
             if (!usuarioId.HasValue)
             {
                 return RedirectToAction("Index", "Login");
@@ -387,18 +417,18 @@ namespace RedFlix.Controllers
 
         public ActionResult Details(int? id)
         {
-            var perfil = GetOwnedProfile(id);
+            var perfil = ObtenerPerfilPropio(id);
             if (perfil == null)
             {
                 return id == null ? (ActionResult)new HttpStatusCodeResult(HttpStatusCode.BadRequest) : HttpNotFound();
             }
 
-            return View(_profileService.ToViewModel(perfil));
+            return View(_servicioPerfiles.ConvertirAViewModel(perfil));
         }
 
         public ActionResult Create()
         {
-            var usuarioId = GetCurrentUserId();
+            var usuarioId = ObtenerUsuarioActualId();
             if (!usuarioId.HasValue)
             {
                 return RedirectToAction("Index", "Login");
@@ -407,8 +437,8 @@ namespace RedFlix.Controllers
             return View(new ProfileViewModel
             {
                 UsuarioID = usuarioId.Value,
-                Icono = ProfileService.DefaultIcons[0],
-                IconosDisponibles = ProfileService.DefaultIcons
+                Icono = ProfileService.IconosPredeterminados[0],
+                IconosDisponibles = ProfileService.IconosPredeterminados
             });
         }
 
@@ -416,7 +446,7 @@ namespace RedFlix.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Create(ProfileViewModel model)
         {
-            var usuarioId = GetCurrentUserId();
+            var usuarioId = ObtenerUsuarioActualId();
             if (!usuarioId.HasValue)
             {
                 return RedirectToAction("Index", "Login");
@@ -427,36 +457,36 @@ namespace RedFlix.Controllers
                 var perfil = new perfiles
                 {
                     Nombre = model.Nombre,
-                    Icono = string.IsNullOrWhiteSpace(model.Icono) ? ProfileService.DefaultIcons[0] : model.Icono,
+                    Icono = string.IsNullOrWhiteSpace(model.Icono) ? ProfileService.IconosPredeterminados[0] : model.Icono,
                     usuarioID = usuarioId.Value
                 };
 
                 db.perfiles.Add(perfil);
                 db.SaveChanges();
-                _profileService.SaveProfilePassword(perfil.ID, model.ContrasenaPerfil);
+                _servicioPerfiles.GuardarContrasenaPerfil(perfil.ID, model.ContrasenaPerfil);
                 return RedirectToAction("Index");
             }
 
-            model.IconosDisponibles = ProfileService.DefaultIcons;
+            model.IconosDisponibles = ProfileService.IconosPredeterminados;
             return View(model);
         }
 
         public ActionResult Edit(int? id)
         {
-            var perfil = GetOwnedProfile(id);
+            var perfil = ObtenerPerfilPropio(id);
             if (perfil == null)
             {
                 return id == null ? (ActionResult)new HttpStatusCodeResult(HttpStatusCode.BadRequest) : HttpNotFound();
             }
 
-            return View(_profileService.ToViewModel(perfil));
+            return View(_servicioPerfiles.ConvertirAViewModel(perfil));
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Edit(ProfileViewModel model)
         {
-            var perfil = GetOwnedProfile(model.ID);
+            var perfil = ObtenerPerfilPropio(model.ID);
             if (perfil == null)
             {
                 return HttpNotFound();
@@ -465,39 +495,39 @@ namespace RedFlix.Controllers
             if (ModelState.IsValid)
             {
                 perfil.Nombre = model.Nombre;
-                perfil.Icono = string.IsNullOrWhiteSpace(model.Icono) ? ProfileService.DefaultIcons[0] : model.Icono;
+                perfil.Icono = string.IsNullOrWhiteSpace(model.Icono) ? ProfileService.IconosPredeterminados[0] : model.Icono;
                 db.Entry(perfil).State = EntityState.Modified;
                 db.SaveChanges();
-                _profileService.SaveProfilePassword(perfil.ID, model.ContrasenaPerfil);
+                _servicioPerfiles.GuardarContrasenaPerfil(perfil.ID, model.ContrasenaPerfil);
                 return RedirectToAction("Index");
             }
 
-            model.IconosDisponibles = ProfileService.DefaultIcons;
+            model.IconosDisponibles = ProfileService.IconosPredeterminados;
             return View(model);
         }
 
         public ActionResult Delete(int? id)
         {
-            var perfil = GetOwnedProfile(id);
+            var perfil = ObtenerPerfilPropio(id);
             if (perfil == null)
             {
                 return id == null ? (ActionResult)new HttpStatusCodeResult(HttpStatusCode.BadRequest) : HttpNotFound();
             }
 
-            return View(_profileService.ToViewModel(perfil));
+            return View(_servicioPerfiles.ConvertirAViewModel(perfil));
         }
 
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            var perfil = GetOwnedProfile(id);
+            var perfil = ObtenerPerfilPropio(id);
             if (perfil == null)
             {
                 return HttpNotFound();
             }
 
-            RemoveProfileDependencies(perfil.ID);
+            EliminarDependenciasPerfil(perfil.ID);
             db.perfiles.Remove(perfil);
             db.SaveChanges();
 
@@ -510,14 +540,14 @@ namespace RedFlix.Controllers
             return RedirectToAction("Index");
         }
 
-        private int? GetCurrentUserId()
+        private int? ObtenerUsuarioActualId()
         {
             return Session["UsuarioID"] == null ? (int?)null : (int)Session["UsuarioID"];
         }
 
-        private perfiles GetCurrentProfile()
+        private perfiles ObtenerPerfilActual()
         {
-            var usuarioId = GetCurrentUserId();
+            var usuarioId = ObtenerUsuarioActualId();
             if (!usuarioId.HasValue || Session["PerfilID"] == null)
             {
                 return null;
@@ -527,9 +557,9 @@ namespace RedFlix.Controllers
             return db.perfiles.FirstOrDefault(p => p.ID == perfilId && p.usuarioID == usuarioId.Value);
         }
 
-        private perfiles GetOwnedProfile(int? id)
+        private perfiles ObtenerPerfilPropio(int? id)
         {
-            var usuarioId = GetCurrentUserId();
+            var usuarioId = ObtenerUsuarioActualId();
             if (!id.HasValue || !usuarioId.HasValue)
             {
                 return null;
@@ -540,9 +570,9 @@ namespace RedFlix.Controllers
                 .FirstOrDefault(p => p.ID == id.Value && p.usuarioID == usuarioId.Value);
         }
 
-        private listas GetOwnedList(int? id)
+        private listas ObtenerListaPropia(int? id)
         {
-            var usuarioId = GetCurrentUserId();
+            var usuarioId = ObtenerUsuarioActualId();
             if (!id.HasValue || !usuarioId.HasValue)
             {
                 return null;
@@ -553,11 +583,11 @@ namespace RedFlix.Controllers
                 .FirstOrDefault(l => l.ID == id.Value && l.perfiles.usuarioID == usuarioId.Value);
         }
 
-        private async Task<ContentItemViewModel> LoadContentItemAsync(int tmdbId, string tipo)
+        private async Task<ContentItemViewModel> CargarContenidoAsync(int tmdbId, string tipo)
         {
             if (tipo == "Serie")
             {
-                var serie = await _tmdb.GetSeriesDetailAsync(tmdbId);
+                var serie = await _servicioTmdb.GetSeriesDetailAsync(tmdbId);
                 return new ContentItemViewModel
                 {
                     TmdbId = serie.Id,
@@ -569,7 +599,7 @@ namespace RedFlix.Controllers
                 };
             }
 
-            var pelicula = await _tmdb.GetMovieDetailAsync(tmdbId);
+            var pelicula = await _servicioTmdb.GetMovieDetailAsync(tmdbId);
             return new ContentItemViewModel
             {
                 TmdbId = pelicula.Id,
@@ -581,7 +611,7 @@ namespace RedFlix.Controllers
             };
         }
 
-        private ActionResult RedirectToLocal(string returnUrl)
+        private ActionResult RedirigirLocal(string returnUrl)
         {
             if (!string.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl))
             {
@@ -591,7 +621,7 @@ namespace RedFlix.Controllers
             return RedirectToAction("Index", "Home");
         }
 
-        private void RemoveProfileDependencies(int perfilId)
+        private void EliminarDependenciasPerfil(int perfilId)
         {
             var listas = db.listas.Where(l => l.perfilID == perfilId).ToList();
             var listaIds = listas.Select(l => l.ID).ToList();

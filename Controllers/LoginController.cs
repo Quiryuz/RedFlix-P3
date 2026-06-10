@@ -9,7 +9,7 @@ namespace RedFlix.Controllers
     public class LoginController : Controller
     {
         private readonly RedFlixIIIEntities db = new RedFlixIIIEntities();
-        private readonly PermissionService _permissionService = new PermissionService();
+        private readonly PermissionService _servicioPermisos = new PermissionService();
 
         public ActionResult Index()
         {
@@ -24,7 +24,7 @@ namespace RedFlix.Controllers
 
             if (usuario != null)
             {
-                _permissionService.EnsurePermissionCatalog();
+                _servicioPermisos.AsegurarCatalogoPermisos();
                 Session["UsuarioID"] = usuario.ID;
                 Session["Nombre"] = usuario.Nombre;
                 Session["RolID"] = usuario.RolID;
@@ -32,7 +32,7 @@ namespace RedFlix.Controllers
                 Session.Remove("PerfilNombre");
                 PermissionHelper.SetUserPermissions(
                     Session,
-                    _permissionService.GetPermissionNamesForRole(usuario.RolID));
+                    _servicioPermisos.ObtenerNombresPermisosPorRol(usuario.RolID));
                 return RedirectToAction("Index", "MiPerfil");
             }
 

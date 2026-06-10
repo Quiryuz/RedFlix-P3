@@ -10,9 +10,9 @@ namespace RedFlix.Services
 {
     public class ProfileService
     {
-        private const string PasswordColumn = "ContrasenaPerfil";
+        private const string ColumnaContrasena = "ContrasenaPerfil";
 
-        public static readonly string[] DefaultIcons =
+        public static readonly string[] IconosPredeterminados =
         {
             "red",
             "blue",
@@ -21,97 +21,97 @@ namespace RedFlix.Services
             "orange"
         };
 
-        public void EnsureProfilePasswordColumn()
+        public void AsegurarColumnaContrasenaPerfil()
         {
-            using (var connection = new SqlConnection(GetProviderConnectionString()))
-            using (var command = connection.CreateCommand())
+            using (var conexion = new SqlConnection(ObtenerCadenaConexionProveedor()))
+            using (var comando = conexion.CreateCommand())
             {
-                command.CommandText = @"
+                comando.CommandText = @"
 IF COL_LENGTH('dbo.perfiles', 'ContrasenaPerfil') IS NULL
 BEGIN
     ALTER TABLE dbo.perfiles ADD ContrasenaPerfil VARCHAR(255) NULL
 END";
-                connection.Open();
-                command.ExecuteNonQuery();
+                conexion.Open();
+                comando.ExecuteNonQuery();
             }
         }
 
-        public string GetProfilePassword(int perfilId)
+        public string ObtenerContrasenaPerfil(int perfilId)
         {
-            EnsureProfilePasswordColumn();
+            AsegurarColumnaContrasenaPerfil();
 
-            using (var connection = new SqlConnection(GetProviderConnectionString()))
-            using (var command = connection.CreateCommand())
+            using (var conexion = new SqlConnection(ObtenerCadenaConexionProveedor()))
+            using (var comando = conexion.CreateCommand())
             {
-                command.CommandText = "SELECT ContrasenaPerfil FROM dbo.perfiles WHERE ID = @id";
-                command.Parameters.AddWithValue("@id", perfilId);
-                connection.Open();
+                comando.CommandText = "SELECT ContrasenaPerfil FROM dbo.perfiles WHERE ID = @id";
+                comando.Parameters.AddWithValue("@id", perfilId);
+                conexion.Open();
 
-                var value = command.ExecuteScalar();
-                return value == null || value == System.DBNull.Value ? string.Empty : value.ToString();
+                var valor = comando.ExecuteScalar();
+                return valor == null || valor == System.DBNull.Value ? string.Empty : valor.ToString();
             }
         }
 
-        public void SaveProfilePassword(int perfilId, string password)
+        public void GuardarContrasenaPerfil(int perfilId, string contrasena)
         {
-            EnsureProfilePasswordColumn();
+            AsegurarColumnaContrasenaPerfil();
 
-            using (var connection = new SqlConnection(GetProviderConnectionString()))
-            using (var command = connection.CreateCommand())
+            using (var conexion = new SqlConnection(ObtenerCadenaConexionProveedor()))
+            using (var comando = conexion.CreateCommand())
             {
-                command.CommandText = "UPDATE dbo.perfiles SET ContrasenaPerfil = @password WHERE ID = @id";
-                command.Parameters.AddWithValue("@id", perfilId);
-                command.Parameters.AddWithValue("@password", string.IsNullOrWhiteSpace(password) ? (object)System.DBNull.Value : password);
-                connection.Open();
-                command.ExecuteNonQuery();
+                comando.CommandText = "UPDATE dbo.perfiles SET ContrasenaPerfil = @password WHERE ID = @id";
+                comando.Parameters.AddWithValue("@id", perfilId);
+                comando.Parameters.AddWithValue("@password", string.IsNullOrWhiteSpace(contrasena) ? (object)System.DBNull.Value : contrasena);
+                conexion.Open();
+                comando.ExecuteNonQuery();
             }
         }
 
-        public ProfileViewModel ToViewModel(perfiles perfil, string password = null)
+        public ProfileViewModel ConvertirAViewModel(perfiles perfil, string contrasena = null)
         {
             return new ProfileViewModel
             {
                 ID = perfil.ID,
                 Nombre = perfil.Nombre,
-                Icono = string.IsNullOrWhiteSpace(perfil.Icono) ? DefaultIcons[0] : perfil.Icono,
-                ContrasenaPerfil = password ?? GetProfilePassword(perfil.ID),
+                Icono = string.IsNullOrWhiteSpace(perfil.Icono) ? IconosPredeterminados[0] : perfil.Icono,
+                ContrasenaPerfil = contrasena ?? ObtenerContrasenaPerfil(perfil.ID),
                 UsuarioID = perfil.usuarioID,
                 UsuarioNombre = perfil.usuarios != null ? perfil.usuarios.Nombre : null,
                 UsuarioMail = perfil.usuarios != null ? perfil.usuarios.Mail : null,
-                IconosDisponibles = DefaultIcons
+                IconosDisponibles = IconosPredeterminados
             };
         }
 
-        public SelectList GetIconSelectList(string selectedIcon = null)
+        public SelectList ObtenerSelectListIconos(string iconoSeleccionado = null)
         {
-            var items = DefaultIcons.Select(icon => new SelectListItem
+            var items = IconosPredeterminados.Select(icono => new SelectListItem
             {
-                Text = GetIconDisplayName(icon),
-                Value = icon,
-                Selected = icon == selectedIcon
+                Text = ObtenerNombreIcono(icono),
+                Value = icono,
+                Selected = icono == iconoSeleccionado
             });
 
-            return new SelectList(items, "Value", "Text", selectedIcon);
+            return new SelectList(items, "Value", "Text", iconoSeleccionado);
         }
 
-        public static string GetIconDisplayName(string icon)
+        public static string ObtenerNombreIcono(string icono)
         {
-            switch (icon)
+            switch (icono)
             {
                 case "red": return "Rojo";
                 case "blue": return "Azul";
                 case "green": return "Verde";
                 case "purple": return "Violeta";
                 case "orange": return "Naranja";
-                default: return icon;
+                default: return icono;
             }
         }
 
-        private static string GetProviderConnectionString()
+        private static string ObtenerCadenaConexionProveedor()
         {
-            var entityConnection = ConfigurationManager.ConnectionStrings["RedFlixIIIEntities"].ConnectionString;
-            var builder = new EntityConnectionStringBuilder(entityConnection);
-            return builder.ProviderConnectionString;
+            var conexionEntity = ConfigurationManager.ConnectionStrings["RedFlixIIIEntities"].ConnectionString;
+            var constructor = new EntityConnectionStringBuilder(conexionEntity);
+            return constructor.ProviderConnectionString;
         }
     }
 }
