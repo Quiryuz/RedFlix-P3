@@ -12,7 +12,8 @@ FROM (VALUES
     ('Listas.Ver'), ('Listas.Crear'), ('Listas.Editar'), ('Listas.Eliminar'),
     ('Favoritos.Ver'), ('Favoritos.Crear'), ('Favoritos.Editar'), ('Favoritos.Eliminar'),
     ('Peliculas.Ver'),
-    ('Series.Ver')
+    ('Series.Ver'),
+    ('Auditoria.Ver')
 ) AS p(Nombre)
 WHERE NOT EXISTS (SELECT 1 FROM permisos x WHERE x.Nombre = p.Nombre);
 GO

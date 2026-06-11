@@ -1,0 +1,104 @@
+@model RedFlix.Models.AuditoriaViewModel
+
+@{
+    ViewBag.Title = "Auditoria";
+    ViewBag.ModuleTitle = "Auditoria";
+    ViewBag.ModuleSubtitle = "Registro de creacion de usuarios y cambios de permisos";
+    ViewBag.ShowCreate = false;
+}
+
+@Html.Partial("_ModuleHeader")
+
+<h2 class="module-title mt-4">Creacion de usuarios</h2>
+
+@if (Model == null || Model.Usuarios == null || !Model.Usuarios.Any())
+{
+    <div class="module-card">
+        <p class="text-muted mb-0">Todavia no hay registros de creacion de usuarios.</p>
+    </div>
+}
+else
+{
+    <div class="module-card module-card-table">
+        <div class="table-responsive">
+            <table class="table module-table">
+                <thead>
+                    <tr>
+                        <th>Fecha</th>
+                        <th>Creador</th>
+                        <th>ID creado</th>
+                        <th>Rol asignado</th>
+                        <th>IP</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.Usuarios)
+                    {
+                        <tr>
+                            <td>@item.Fecha.ToString("dd/MM/yyyy HH:mm")</td>
+                            <td>
+                                @item.NombreCreador
+                                @if (item.UsuarioCreadorID.HasValue)
+                                {
+                                    <span class="text-muted">(#@item.UsuarioCreadorID)</span>
+                                }
+                            </td>
+                            <td>#@item.UsuarioCreadoID</td>
+                            <td>@item.RolAsignadoNombre <span class="text-muted">(#@item.RolAsignadoID)</span></td>
+                            <td>@(string.IsNullOrWhiteSpace(item.DireccionIP) ? "-" : item.DireccionIP)</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}
+
+<h2 class="module-title mt-4">Permisos de roles</h2>
+
+@if (Model == null || Model.PermisosRoles == null || !Model.PermisosRoles.Any())
+{
+    <div class="module-card">
+        <p class="text-muted mb-0">Todavia no hay registros de permisos agregados o quitados.</p>
+    </div>
+}
+else
+{
+    <div class="module-card module-card-table">
+        <div class="table-responsive">
+            <table class="table module-table">
+                <thead>
+                    <tr>
+                        <th>Fecha</th>
+                        <th>Usuario</th>
+                        <th>Rol</th>
+                        <th>Permiso</th>
+                        <th>Accion</th>
+                        <th>IP</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.PermisosRoles)
+                    {
+                        <tr>
+                            <td>@item.Fecha.ToString("dd/MM/yyyy HH:mm")</td>
+                            <td>
+                                @item.NombreCreador
+                                @if (item.UsuarioCreadorID.HasValue)
+                                {
+                                    <span class="text-muted">(#@item.UsuarioCreadorID)</span>
+                                }
+                            </td>
+                            <td>@item.RolNombre <span class="text-muted">(#@item.RolID)</span></td>
+                            <td>@item.PermisoNombre <span class="text-muted">(#@item.PermisoID)</span></td>
+                            <td>
+                                <span class="permission-tag">@item.Accion</span>
+                            </td>
+                            <td>@(string.IsNullOrWhiteSpace(item.DireccionIP) ? "-" : item.DireccionIP)</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}

@@ -173,6 +173,7 @@ namespace RedFlix.Services
                 case PermissionKeys.Favoritos: return "Favoritos";
                 case PermissionKeys.Peliculas: return "Peliculas (API)";
                 case PermissionKeys.Series: return "Series (API)";
+                case PermissionKeys.Auditoria: return "Auditoria";
                 default: return entidad;
             }
         }

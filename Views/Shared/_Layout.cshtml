@@ -23,8 +23,9 @@
         var puedePerfiles = PermissionHelper.PuedeVerModulo(Session, PermissionKeys.Perfiles);
         var puedeListas = PermissionHelper.PuedeVerModulo(Session, PermissionKeys.Listas);
         var puedeFavoritos = PermissionHelper.PuedeVerModulo(Session, PermissionKeys.Favoritos);
+        var puedeAuditoria = PermissionHelper.PuedeVerModulo(Session, PermissionKeys.Auditoria);
         var esAdmin = Session["RolID"] != null && Convert.ToInt32(Session["RolID"]) == 1;
-        var mostrarAdmin = usuarioLogueado && (puedeUsuarios || puedeRoles || puedePermisos || puedePerfiles || puedeListas || puedeFavoritos || esAdmin);
+        var mostrarAdmin = usuarioLogueado && (puedeUsuarios || puedeRoles || puedePermisos || puedePerfiles || puedeListas || puedeFavoritos || puedeAuditoria || esAdmin);
     }
     <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark navbar-redflix">
 
@@ -89,7 +90,7 @@
                                 {
                                     <li>@Html.ActionLink("Perfiles", "Index", "Perfiles", null, new { @class = "dropdown-item" })</li>
                                 }
-                                @if (puedeFavoritos || puedeListas || esAdmin)
+                                @if (puedeFavoritos || puedeListas || puedeAuditoria || esAdmin)
                                 {
                                     <li><hr class="dropdown-divider" /></li>
                                 }
@@ -100,6 +101,10 @@
                                 @if (puedeListas)
                                 {
                                     <li>@Html.ActionLink("Listas", "Index", "Listas", null, new { @class = "dropdown-item" })</li>
+                                }
+                                @if (puedeAuditoria)
+                                {
+                                    <li>@Html.ActionLink("Auditoria", "Index", "Auditoria", null, new { @class = "dropdown-item" })</li>
                                 }
                                 @if (esAdmin)
                                 {

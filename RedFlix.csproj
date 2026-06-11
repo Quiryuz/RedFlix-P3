@@ -132,6 +132,7 @@
       <DependentUpon>RedFlixModels.tt</DependentUpon>
     </Compile>
     <Compile Include="Controllers\AdminController.cs" />
+    <Compile Include="Controllers\AuditoriaController.cs" />
     <Compile Include="Controllers\calificacionesController.cs" />
     <Compile Include="Controllers\climasController.cs" />
     <Compile Include="Controllers\cotizacionesController.cs" />
@@ -157,6 +158,7 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Models\AuditoriaUsuarioViewModel.cs" />
     <Compile Include="Models\Tmdb\TmdbModels.cs" />
     <Compile Include="listaContenido.cs">
       <DependentUpon>RedFlixModels.tt</DependentUpon>
@@ -270,6 +272,7 @@
     <Content Include="Views\Home\About.cshtml" />
     <Content Include="Views\Home\Contact.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
+    <Content Include="Views\Auditoria\Index.cshtml" />
     <Content Include="Views\calificaciones\Create.cshtml" />
     <Content Include="Views\calificaciones\Delete.cshtml" />
     <Content Include="Views\calificaciones\Details.cshtml" />
