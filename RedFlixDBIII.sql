@@ -116,6 +116,17 @@ CREATE TABLE rolesPermisos (
     REFERENCES permisos(ID)
 )
 
+CREATE TABLE auditoriaUsuarios (
+    ID INT IDENTITY(1,1) PRIMARY KEY,
+    UsuarioCreadorID INT NULL,
+    NombreCreador VARCHAR(100) NOT NULL,
+    UsuarioCreadoID INT NOT NULL,
+    RolAsignadoID INT NOT NULL,
+    RolAsignadoNombre VARCHAR(50) NOT NULL,
+    Fecha DATETIME NOT NULL DEFAULT GETDATE(),
+    DireccionIP VARCHAR(50) NULL
+)
+
 ALTER TABLE usuarios
 ADD CONSTRAINT uq_usuario_mail
 UNIQUE (Mail)
