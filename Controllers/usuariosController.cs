@@ -8,6 +8,7 @@ using System.Web;
 using System.Web.Mvc;
 using RedFlix;
 using RedFlix.Authorization;
+using RedFlix.ViewModels;
 
 namespace RedFlix.Controllers
 {
@@ -55,13 +56,79 @@ namespace RedFlix.Controllers
         {
             if (ModelState.IsValid)
             {
+                usuarios.Contrasena =
+                    BCrypt.Net.BCrypt.HashPassword(usuarios.Contrasena);
+
                 db.usuarios.Add(usuarios);
                 db.SaveChanges();
+
                 return RedirectToAction("Index");
             }
 
             ViewBag.RolID = new SelectList(db.Roles, "ID", "Nombre", usuarios.RolID);
             return View(usuarios);
+        }
+
+        public ActionResult CambiarContrasena(int? id)
+        {
+            if (id == null)
+            {
+                return HttpNotFound();
+            }
+
+            var usuario = db.usuarios.Find(id);
+
+            if (usuario == null)
+            {
+                return HttpNotFound();
+            }
+
+            var model = new CambiarContrasenaViewModel
+            {
+                UsuarioID = usuario.ID
+            };
+
+            return View(model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult CambiarContrasena(CambiarContrasenaViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            var usuario = db.usuarios.Find(model.UsuarioID);
+
+            if (usuario == null)
+            {
+                return HttpNotFound();
+            }
+
+            if (!BCrypt.Net.BCrypt.Verify(
+                    model.ContrasenaActual,
+                    usuario.Contrasena))
+            {
+                ModelState.AddModelError(
+                    "",
+                    "La contraseña actual es incorrecta.");
+
+                return View(model);
+            }
+
+            usuario.Contrasena =
+                BCrypt.Net.BCrypt.HashPassword(
+                    model.NuevaContrasena);
+
+            db.SaveChanges();
+
+            TempData["Success"] =
+                "Contraseña actualizada correctamente.";
+
+            return RedirectToAction("Edit",
+                new { id = usuario.ID });
         }
 
         // GET: usuarios/Edit/5
@@ -85,14 +152,24 @@ namespace RedFlix.Controllers
         // más detalles, vea https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "ID,Nombre,Mail,RolID,Contrasena")] usuarios usuarios)
+        public ActionResult Edit([Bind(Include = "ID,Nombre,Mail,RolID")] usuarios usuarios)
         {
             if (ModelState.IsValid)
             {
-                db.Entry(usuarios).State = EntityState.Modified;
+                var usuarioBD = db.usuarios.Find(usuarios.ID);
+
+                if (usuarioBD == null)
+                    return HttpNotFound();
+
+                usuarioBD.Nombre = usuarios.Nombre;
+                usuarioBD.Mail = usuarios.Mail;
+                usuarioBD.RolID = usuarios.RolID;
+
                 db.SaveChanges();
+
                 return RedirectToAction("Index");
             }
+
             ViewBag.RolID = new SelectList(db.Roles, "ID", "Nombre", usuarios.RolID);
             return View(usuarios);
         }

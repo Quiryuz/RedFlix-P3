@@ -1,0 +1,111 @@
+﻿
+@model RedFlix.ViewModels.CambiarContrasenaViewModel
+
+@{
+    ViewBag.Title = "Cambiar Contraseña";
+}
+
+@{
+    ViewBag.ModuleTitle = "Cambiar Contraseña";
+    ViewBag.ModuleSubtitle = "Actualización segura de credenciales";
+    ViewBag.ShowCreate = false;
+}
+
+@Html.Partial("_ModuleHeader")
+
+<div class="module-card">
+
+    @using (Html.BeginForm())
+    {
+        @Html.AntiForgeryToken()
+
+        @Html.HiddenFor(model => model.UsuarioID)
+
+        <div class="form-horizontal module-form">
+
+            <hr />
+
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+            @if (TempData["Success"] != null)
+            {
+                <div class="alert alert-success">
+                    @TempData["Success"]
+                </div>
+            }
+
+            <div class="form-group">
+                @Html.LabelFor(
+                    model => model.ContrasenaActual,
+                    htmlAttributes: new { @class = "control-label col-md-2" })
+
+                <div class="col-md-10">
+                    @Html.PasswordFor(
+                        model => model.ContrasenaActual,
+                        new { @class = "form-control" })
+
+                    @Html.ValidationMessageFor(
+                        model => model.ContrasenaActual,
+                        "",
+                        new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(
+                    model => model.NuevaContrasena,
+                    htmlAttributes: new { @class = "control-label col-md-2" })
+
+                <div class="col-md-10">
+                    @Html.PasswordFor(
+                        model => model.NuevaContrasena,
+                        new { @class = "form-control" })
+
+                    @Html.ValidationMessageFor(
+                        model => model.NuevaContrasena,
+                        "",
+                        new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(
+                    model => model.ConfirmarContrasena,
+                    htmlAttributes: new { @class = "control-label col-md-2" })
+
+                <div class="col-md-10">
+                    @Html.PasswordFor(
+                        model => model.ConfirmarContrasena,
+                        new { @class = "form-control" })
+
+                    @Html.ValidationMessageFor(
+                        model => model.ConfirmarContrasena,
+                        "",
+                        new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="col-md-offset-2 col-md-10">
+                    <input type="submit"
+                           value="Actualizar contraseña"
+                           class="btn btn-danger" />
+                </div>
+            </div>
+
+        </div>
+    }
+
+</div>
+
+<div class="module-footer-links">
+    @Html.ActionLink(
+        "Volver a edición",
+        "Edit",
+        new { id = Model.UsuarioID },
+        new { @class = "module-back-link" })
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}
