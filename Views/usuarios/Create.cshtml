@@ -109,13 +109,7 @@
                     @Html.ValidationMessageFor(model => model.RolID, "", new { @class = "text-danger" })
                 </div>
             }
-            else
-            {
-                <div class="form-group">
-                    <label>Rol</label>
-                    <p class="text-muted mb-0">La cuenta se creara con rol Usuario.</p>
-                </div>
-            }
+            
 
             <div class="form-group">
                 @Html.LabelFor(model => model.Contrasena)

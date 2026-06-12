@@ -87,8 +87,10 @@ namespace RedFlix.Controllers
                 db.usuarios.Add(usuarios);
                 db.SaveChanges();
 
-                return RedirectToAction("Index");
-                RegistrarAuditoriaCreacionUsuario(usuarios.ID, usuarios.RolID);
+                RegistrarAuditoriaCreacionUsuario(
+                    usuarios.ID,
+                    usuarios.RolID);
+
                 return esAdministrador
                     ? RedirectToAction("Index")
                     : RedirectToAction("Index", "Login");
@@ -167,12 +169,22 @@ namespace RedFlix.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
+
             usuarios usuarios = db.usuarios.Find(id);
+
             if (usuarios == null)
             {
                 return HttpNotFound();
             }
-            ViewBag.RolID = new SelectList(db.Roles, "ID", "Nombre", usuarios.RolID);
+
+            ViewBag.RolID = new SelectList(
+                db.Roles,
+                "ID",
+                "Nombre",
+                usuarios.RolID);
+
+            ViewBag.EsAdministrador = EsAdministradorAutenticado();
+
             return View(usuarios);
         }
 
