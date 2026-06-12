@@ -160,6 +160,7 @@
     </Compile>
     <Compile Include="Models\AuditoriaUsuarioViewModel.cs" />
     <Compile Include="Models\HistorialVisualizacionViewModel.cs" />
+    <Compile Include="Models\Clima\OpenWeatherModels.cs" />
     <Compile Include="Models\Tmdb\TmdbModels.cs" />
     <Compile Include="listaContenido.cs">
       <DependentUpon>RedFlixModels.tt</DependentUpon>
@@ -194,6 +195,8 @@
     </Compile>
     <Compile Include="Services\PermissionService.cs" />
     <Compile Include="Services\HistorialVisualizacionService.cs" />
+    <Compile Include="Services\InformacionPersonalService.cs" />
+    <Compile Include="Services\ClimaService.cs" />
     <Compile Include="Services\ProfileService.cs" />
     <Compile Include="Services\TMDBService.cs" />
     <Compile Include="usuarios.cs">

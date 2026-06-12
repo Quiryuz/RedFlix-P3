@@ -123,6 +123,21 @@ ORDER BY FechaVisualizacion DESC";
             }
         }
 
+        public void LimpiarHistorialPerfil(int perfilId)
+        {
+            AsegurarTabla();
+
+            using (var conexion = new SqlConnection(ObtenerCadenaConexionProveedor()))
+            using (var comando = conexion.CreateCommand())
+            {
+                comando.CommandText = "DELETE FROM dbo.historialVisualizaciones WHERE PerfilID = @perfilId";
+                comando.Parameters.Add("@perfilId", SqlDbType.Int).Value = perfilId;
+
+                conexion.Open();
+                comando.ExecuteNonQuery();
+            }
+        }
+
         private static string ObtenerCadenaConexionProveedor()
         {
             var conexionEntity = ConfigurationManager.ConnectionStrings["RedFlixIIIEntities"].ConnectionString;

@@ -14,6 +14,7 @@ namespace RedFlix.Controllers
     {
         private readonly TMDBService _servicioTmdb = new TMDBService();
         private readonly HistorialVisualizacionService _servicioHistorial = new HistorialVisualizacionService();
+        private readonly ClimaService _servicioClima = new ClimaService();
         private readonly RedFlixIIIEntities _baseDatos = new RedFlixIIIEntities();
 
         public async Task<ActionResult> Index()
@@ -56,6 +57,30 @@ namespace RedFlix.Controllers
             catch (Exception ex)
             {
                 ViewBag.Error = "No se pudo conectar con TMDB: " + ex.Message;
+                return View("Index", new System.Collections.Generic.List<TmdbMovieResult>());
+            }
+        }
+
+        public async Task<ActionResult> RecomendadasPorClima()
+        {
+            var redireccionPerfil = RedirigirSeleccionPerfilSiHaceFalta();
+            if (redireccionPerfil != null)
+            {
+                return redireccionPerfil;
+            }
+
+            try
+            {
+                var recomendacion = await _servicioClima.ObtenerRecomendacionPorClimaAsync();
+                var respuesta = await _servicioTmdb.GetMoviesByGenreAsync(recomendacion.GeneroTmdbId);
+                ViewBag.Titulo = "Recomendadas por clima: " + recomendacion.GeneroNombre;
+                ViewBag.ClimaMotivo = recomendacion.Ciudad + " - " + recomendacion.Descripcion + ". " + recomendacion.Motivo;
+                CargarEstadoContenidoPerfil();
+                return View("Index", respuesta.Results);
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Error = "No se pudieron cargar recomendaciones por clima: " + ex.Message;
                 return View("Index", new System.Collections.Generic.List<TmdbMovieResult>());
             }
         }

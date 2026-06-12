@@ -13,6 +13,14 @@
     @Html.ActionLink("Mis listas", "Listas", null, new { @class = "btn btn-outline-light btn-sm" })
     @Html.ActionLink("Mis calificaciones", "MisCalificaciones", null, new { @class = "btn btn-outline-light btn-sm" })
     @Html.ActionLink("Volver a mi perfil", "Menu", null, new { @class = "module-back-link" })
+    @if (Model != null && Model.Any())
+    {
+        using (Html.BeginForm("LimpiarHistorial", "MiPerfil", FormMethod.Post, new { @class = "d-inline" }))
+        {
+            @Html.AntiForgeryToken()
+            <button type="submit" class="btn btn-outline-danger btn-sm">Limpiar historial</button>
+        }
+    }
 </div>
 
 @if (Model == null || !Model.Any())

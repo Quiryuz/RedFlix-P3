@@ -15,6 +15,7 @@ namespace RedFlix.Controllers
         private readonly ProfileService _servicioPerfiles = new ProfileService();
         private readonly TMDBService _servicioTmdb = new TMDBService();
         private readonly HistorialVisualizacionService _servicioHistorial = new HistorialVisualizacionService();
+        private readonly InformacionPersonalService _servicioInformacionPersonal = new InformacionPersonalService();
 
         public ActionResult Index()
         {
@@ -42,12 +43,22 @@ namespace RedFlix.Controllers
                 return RedirectToAction("Index");
             }
 
-            ViewBag.TotalListas = db.listas.Count(l => l.perfilID == perfil.ID);
-            ViewBag.TotalFavoritos = db.favoritos.Count(f => f.perfilID == perfil.ID);
-            ViewBag.TotalCalificaciones = db.calificaciones.Count(c => c.perfilID == perfil.ID);
-            ViewBag.TotalHistorial = _servicioHistorial.ContarHistorialPerfil(perfil.ID);
+            var totalListas = db.listas.Count(l => l.perfilID == perfil.ID);
+            var totalFavoritos = db.favoritos.Count(f => f.perfilID == perfil.ID);
+            var totalCalificaciones = db.calificaciones.Count(c => c.perfilID == perfil.ID);
+            var totalHistorial = _servicioHistorial.ContarHistorialPerfil(perfil.ID);
 
-            return View(_servicioPerfiles.ConvertirAViewModel(perfil));
+            var modelo = new MiPerfilPanelViewModel
+            {
+                Perfil = _servicioPerfiles.ConvertirAViewModel(perfil),
+                InformacionPersonal = _servicioInformacionPersonal.ObtenerInformacionPersonal(perfil.usuarioID, perfil.ID),
+                TotalListas = totalListas,
+                TotalFavoritos = totalFavoritos,
+                TotalCalificaciones = totalCalificaciones,
+                TotalHistorial = totalHistorial
+            };
+
+            return View(modelo);
         }
 
         public ActionResult Seleccionar(int id)
@@ -264,6 +275,20 @@ namespace RedFlix.Controllers
 
             ViewBag.PerfilActivo = perfil.Nombre;
             return View(_servicioHistorial.ObtenerHistorialPerfil(perfil.ID));
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult LimpiarHistorial()
+        {
+            var perfil = ObtenerPerfilActual();
+            if (perfil == null)
+            {
+                return RedirectToAction("Index");
+            }
+
+            _servicioHistorial.LimpiarHistorialPerfil(perfil.ID);
+            return RedirectToAction("Historial");
         }
 
         [HttpPost]

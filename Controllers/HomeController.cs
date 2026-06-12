@@ -8,6 +8,7 @@ namespace RedFlix.Controllers
     public class HomeController : Controller
     {
         private readonly TMDBService _servicioTmdb = new TMDBService();
+        private readonly ClimaService _servicioClima = new ClimaService();
 
         public async Task<ActionResult> Index()
         {
@@ -20,10 +21,13 @@ namespace RedFlix.Controllers
             {
                 ViewBag.PeliculasTendencia = (await _servicioTmdb.GetTrendingMoviesAsync()).Results;
                 ViewBag.SeriesTendencia = (await _servicioTmdb.GetTrendingSeriesAsync()).Results;
+                var recomendacionClima = await _servicioClima.ObtenerRecomendacionPorClimaAsync();
+                ViewBag.ClimaRecomendacion = recomendacionClima;
+                ViewBag.PeliculasPorClima = (await _servicioTmdb.GetMoviesByGenreAsync(recomendacionClima.GeneroTmdbId)).Results;
             }
             catch (Exception ex)
             {
-                ViewBag.Error = "No se pudo conectar con TMDB: " + ex.Message;
+                ViewBag.Error = "No se pudo cargar informacion externa: " + ex.Message;
             }
 
             return View();

@@ -83,6 +83,10 @@ CREATE TABLE usuarios (
     Nombre VARCHAR(50) NOT NULL,
     Mail VARCHAR(50) NOT NULL,
     RolID INT NOT NULL,
+    NombreUsuario VARCHAR(50) NULL,
+    FechaRegistro DATETIME NULL DEFAULT GETDATE(),
+    EstadoCuenta VARCHAR(20) NULL DEFAULT 'Activa',
+    FotoPerfil VARCHAR(255) NULL,
 
     CONSTRAINT fk_rol_usuario
     FOREIGN KEY (RolID)

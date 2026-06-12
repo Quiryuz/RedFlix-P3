@@ -5,7 +5,7 @@
 
 <div class="catalog-header">
     <h1 class="catalog-title">@ViewBag.Title</h1>
-    <p class="catalog-subtitle">Explora el catalogo desde TheMovieDB</p>
+    <p class="catalog-subtitle">@(ViewBag.ClimaMotivo ?? "Explora el catalogo desde TheMovieDB")</p>
 </div>
 
 <div class="catalog-toolbar">
@@ -17,6 +17,7 @@
     <div class="catalog-links">
         @Html.ActionLink("Populares", "Index", "Peliculas", null, new { @class = "btn btn-outline-light btn-sm" })
         @Html.ActionLink("Tendencias", "Tendencias", "Peliculas", null, new { @class = "btn btn-outline-light btn-sm" })
+        @Html.ActionLink("Por clima", "RecomendadasPorClima", "Peliculas", null, new { @class = "btn btn-outline-light btn-sm" })
     </div>
 </div>
 
