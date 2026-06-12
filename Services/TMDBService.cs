@@ -62,6 +62,11 @@ namespace RedFlix.Services
             return GetAsync<TmdbPagedResponse<TmdbMovieResult>>("search/movie?language=es-ES&query=" + encodedQuery);
         }
 
+        public Task<TmdbPagedResponse<TmdbMovieResult>> GetMoviesByGenreAsync(int genreId)
+        {
+            return GetAsync<TmdbPagedResponse<TmdbMovieResult>>("discover/movie?language=es-ES&sort_by=popularity.desc&page=1&with_genres=" + genreId);
+        }
+
         public Task<TmdbMovieDetail> GetMovieDetailAsync(int id)
         {
             return GetAsync<TmdbMovieDetail>("movie/" + id + "?language=es-ES&append_to_response=videos,credits");

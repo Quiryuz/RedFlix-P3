@@ -1,13 +1,13 @@
 ﻿@{
-    ViewBag.Title = "Iniciar sesión";
+    ViewBag.Title = "Iniciar sesion";
 }
 
 <section class="auth-page">
     <div class="auth-card">
         <div class="auth-header">
             <span class="auth-logo">RedFlix<span class="auth-logo-plus">+</span></span>
-            <h1>Iniciar sesión</h1>
-            <p>Accedé a tu cuenta para guardar favoritos, listas y calificaciones.</p>
+            <h1>Iniciar sesion</h1>
+            <p>Accede a tu cuenta para guardar favoritos, listas y calificaciones.</p>
         </div>
 
         @if (ViewBag.Error != null)
@@ -33,7 +33,7 @@
             </div>
 
             <div class="auth-field">
-                <label for="contrasenia">Contraseña</label>
+                <label for="contrasenia">Contrasena</label>
                 <input type="password"
                        id="contrasenia"
                        name="contrasenia"
@@ -51,9 +51,11 @@
         <div class="auth-footer">
             <p>¿No tenés cuenta?</p>
             <a href="@Url.Action("Registro", "Login")" class="btn btn-outline-light w-100">
+            <p>No tenes cuenta?</p>
+            <a href="@Url.Action("Create", "Usuarios")" class="btn btn-outline-light w-100">
                 Crear cuenta
             </a>
-            <a href="@Url.Action("Index", "Home")" class="auth-back-link">← Volver al inicio</a>
+            <a href="@Url.Action("Index", "Home")" class="auth-back-link"><- Volver al inicio</a>
         </div>
     </div>
 </section>

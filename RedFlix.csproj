@@ -148,6 +148,7 @@
       <DependentUpon>RedFlixModels.tt</DependentUpon>
     </Compile>
     <Compile Include="Controllers\AdminController.cs" />
+    <Compile Include="Controllers\AuditoriaController.cs" />
     <Compile Include="Controllers\calificacionesController.cs" />
     <Compile Include="Controllers\climasController.cs" />
     <Compile Include="Controllers\cotizacionesController.cs" />
@@ -173,6 +174,9 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Models\AuditoriaUsuarioViewModel.cs" />
+    <Compile Include="Models\HistorialVisualizacionViewModel.cs" />
+    <Compile Include="Models\Clima\OpenWeatherModels.cs" />
     <Compile Include="Models\Tmdb\TmdbModels.cs" />
     <Compile Include="listaContenido.cs">
       <DependentUpon>RedFlixModels.tt</DependentUpon>
@@ -206,6 +210,9 @@
       <DependentUpon>RedFlixModels.tt</DependentUpon>
     </Compile>
     <Compile Include="Services\PermissionService.cs" />
+    <Compile Include="Services\HistorialVisualizacionService.cs" />
+    <Compile Include="Services\InformacionPersonalService.cs" />
+    <Compile Include="Services\ClimaService.cs" />
     <Compile Include="Services\ProfileService.cs" />
     <Compile Include="Services\TMDBService.cs" />
     <Compile Include="usuarios.cs">
@@ -280,12 +287,14 @@
     <Content Include="Views\Shared\_Layout.cshtml" />
     <Content Include="Views\Shared\_ModuleHeader.cshtml" />
     <Content Include="Views\Shared\_ContentActions.cshtml" />
+    <Content Include="Views\Shared\_RatingActions.cshtml" />
     <Content Include="Views\Shared\_RolePermissions.cshtml" />
     <Content Include="Views\Shared\_RolePermissionsReadOnly.cshtml" />
     <Content Include="Views\Home\AccessDenied.cshtml" />
     <Content Include="Views\Home\About.cshtml" />
     <Content Include="Views\Home\Contact.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
+    <Content Include="Views\Auditoria\Index.cshtml" />
     <Content Include="Views\calificaciones\Create.cshtml" />
     <Content Include="Views\calificaciones\Delete.cshtml" />
     <Content Include="Views\calificaciones\Details.cshtml" />
@@ -346,9 +355,12 @@
     <Content Include="Views\MiPerfil\EditarLista.cshtml" />
     <Content Include="Views\MiPerfil\EliminarLista.cshtml" />
     <Content Include="Views\MiPerfil\Favoritos.cshtml" />
+    <Content Include="Views\MiPerfil\Historial.cshtml" />
     <Content Include="Views\MiPerfil\Index.cshtml" />
     <Content Include="Views\MiPerfil\CrearLista.cshtml" />
     <Content Include="Views\MiPerfil\Listas.cshtml" />
+    <Content Include="Views\MiPerfil\Menu.cshtml" />
+    <Content Include="Views\MiPerfil\MisCalificaciones.cshtml" />
     <Content Include="Views\Series\Buscar.cshtml" />
     <Content Include="Views\Series\Detalle.cshtml" />
     <Content Include="Views\Series\Index.cshtml" />

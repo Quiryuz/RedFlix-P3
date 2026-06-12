@@ -35,7 +35,7 @@ else
                     <img src="@RedFlix.Services.TMDBService.GetPosterUrl(item.PosterPath)" alt="@item.Name" class="catalog-poster" />
                     <div class="catalog-card-body">
                         <h3>@item.Name</h3>
-                        <p class="catalog-meta">★ @item.VoteAverage.ToString("0.0")</p>
+                    <p class="catalog-meta">Puntaje @item.VoteAverage.ToString("0.0")</p>
                     </div>
                 </a>
                 @Html.Partial("_ContentActions", null, new ViewDataDictionary(ViewData) { { "TmdbId", item.Id }, { "Tipo", "Serie" } })

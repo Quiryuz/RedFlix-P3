@@ -12,23 +12,24 @@ namespace RedFlix.Controllers
     [AuthorizePermission(Entity = PermissionKeys.Series)]
     public class SeriesController : Controller
     {
-        private readonly TMDBService _tmdb = new TMDBService();
-        private readonly RedFlixIIIEntities db = new RedFlixIIIEntities();
+        private readonly TMDBService _servicioTmdb = new TMDBService();
+        private readonly HistorialVisualizacionService _servicioHistorial = new HistorialVisualizacionService();
+        private readonly RedFlixIIIEntities _baseDatos = new RedFlixIIIEntities();
 
         public async Task<ActionResult> Index()
         {
-            var profileRedirect = RedirectToProfileSelectionIfNeeded();
-            if (profileRedirect != null)
+            var redireccionPerfil = RedirigirSeleccionPerfilSiHaceFalta();
+            if (redireccionPerfil != null)
             {
-                return profileRedirect;
+                return redireccionPerfil;
             }
 
             try
             {
-                var response = await _tmdb.GetPopularSeriesAsync();
+                var respuesta = await _servicioTmdb.GetPopularSeriesAsync();
                 ViewBag.Titulo = "Series populares";
-                LoadProfileContentState();
-                return View(response.Results);
+                CargarEstadoContenidoPerfil();
+                return View(respuesta.Results);
             }
             catch (Exception ex)
             {
@@ -39,18 +40,18 @@ namespace RedFlix.Controllers
 
         public async Task<ActionResult> Tendencias()
         {
-            var profileRedirect = RedirectToProfileSelectionIfNeeded();
-            if (profileRedirect != null)
+            var redireccionPerfil = RedirigirSeleccionPerfilSiHaceFalta();
+            if (redireccionPerfil != null)
             {
-                return profileRedirect;
+                return redireccionPerfil;
             }
 
             try
             {
-                var response = await _tmdb.GetTrendingSeriesAsync();
+                var respuesta = await _servicioTmdb.GetTrendingSeriesAsync();
                 ViewBag.Titulo = "Series en tendencia";
-                LoadProfileContentState();
-                return View("Index", response.Results);
+                CargarEstadoContenidoPerfil();
+                return View("Index", respuesta.Results);
             }
             catch (Exception ex)
             {
@@ -61,10 +62,10 @@ namespace RedFlix.Controllers
 
         public async Task<ActionResult> Detalle(int? id)
         {
-            var profileRedirect = RedirectToProfileSelectionIfNeeded();
-            if (profileRedirect != null)
+            var redireccionPerfil = RedirigirSeleccionPerfilSiHaceFalta();
+            if (redireccionPerfil != null)
             {
-                return profileRedirect;
+                return redireccionPerfil;
             }
 
             if (id == null || id <= 0)
@@ -74,8 +75,10 @@ namespace RedFlix.Controllers
 
             try
             {
-                var serie = await _tmdb.GetSeriesDetailAsync(id.Value);
-                LoadProfileContentState();
+                var serie = await _servicioTmdb.GetSeriesDetailAsync(id.Value);
+                CargarEstadoContenidoPerfil();
+                CargarCalificacionPerfil(id.Value, "Serie");
+                RegistrarVisualizacion(serie);
                 return View(serie);
             }
             catch (Exception ex)
@@ -87,10 +90,10 @@ namespace RedFlix.Controllers
 
         public async Task<ActionResult> Buscar(string q)
         {
-            var profileRedirect = RedirectToProfileSelectionIfNeeded();
-            if (profileRedirect != null)
+            var redireccionPerfil = RedirigirSeleccionPerfilSiHaceFalta();
+            if (redireccionPerfil != null)
             {
-                return profileRedirect;
+                return redireccionPerfil;
             }
 
             ViewBag.Query = q;
@@ -102,18 +105,18 @@ namespace RedFlix.Controllers
 
             try
             {
-                var response = await _tmdb.SearchSeriesAsync(q);
-                LoadProfileContentState();
-                return View(response.Results);
+                var respuesta = await _servicioTmdb.SearchSeriesAsync(q);
+                CargarEstadoContenidoPerfil();
+                return View(respuesta.Results);
             }
             catch (Exception ex)
             {
-                ViewBag.Error = "Error en la búsqueda: " + ex.Message;
+                ViewBag.Error = "Error en la busqueda: " + ex.Message;
                 return View(new System.Collections.Generic.List<TmdbTvResult>());
             }
         }
 
-        private void LoadProfileContentState()
+        private void CargarEstadoContenidoPerfil()
         {
             if (Session["PerfilID"] == null)
             {
@@ -125,30 +128,77 @@ namespace RedFlix.Controllers
 
             var perfilId = (int)Session["PerfilID"];
             ViewBag.FavoritosIds = new HashSet<int>(
-                db.favoritos
+                _baseDatos.favoritos
                     .Where(f => f.perfilID == perfilId && f.tipo == "Serie")
                     .Select(f => f.tmdbID)
                     .ToList());
 
-            ViewBag.ListasPerfil = db.listas
+            ViewBag.ListasPerfil = _baseDatos.listas
                 .Where(l => l.perfilID == perfilId)
                 .OrderBy(l => l.nombre)
                 .Select(l => new SelectListItem { Value = l.ID.ToString(), Text = l.nombre })
                 .ToList();
 
-            var listaIds = db.listas
+            var listaIds = _baseDatos.listas
                 .Where(l => l.perfilID == perfilId)
                 .Select(l => l.ID)
                 .ToList();
 
             ViewBag.ListasContenidoKeys = new HashSet<string>(
-                db.listaContenido
+                _baseDatos.listaContenido
                     .Where(c => listaIds.Contains(c.listaID) && c.tipo == "Serie")
                     .Select(c => c.listaID + ":" + c.tmdbID)
                     .ToList());
         }
 
-        private ActionResult RedirectToProfileSelectionIfNeeded()
+        private void CargarCalificacionPerfil(int tmdbId, string tipo)
+        {
+            ViewBag.CalificacionPersonal = 0;
+
+            if (Session["PerfilID"] == null)
+            {
+                return;
+            }
+
+            var perfilId = (int)Session["PerfilID"];
+            var calificacion = _baseDatos.calificaciones.FirstOrDefault(c =>
+                c.perfilID == perfilId &&
+                c.tmdbID == tmdbId &&
+                c.tipo == tipo);
+
+            if (calificacion != null)
+            {
+                ViewBag.CalificacionPersonal = calificacion.puntaje;
+            }
+        }
+
+        private void RegistrarVisualizacion(TmdbTvDetail serie)
+        {
+            if (Session["PerfilID"] == null || serie == null || DebeOmitirHistorialVisualizacion())
+            {
+                return;
+            }
+
+            var generos = serie.Genres == null
+                ? string.Empty
+                : string.Join(", ", serie.Genres.Select(g => g.Name));
+
+            _servicioHistorial.RegistrarVisualizacion(
+                (int)Session["PerfilID"],
+                serie.Id,
+                "Serie",
+                serie.Name,
+                generos,
+                serie.VoteAverage,
+                serie.PosterPath);
+        }
+
+        private bool DebeOmitirHistorialVisualizacion()
+        {
+            return TempData["OmitirHistorialVisualizacion"] != null;
+        }
+
+        private ActionResult RedirigirSeleccionPerfilSiHaceFalta()
         {
             if (Session["UsuarioID"] != null && Session["PerfilID"] == null)
             {

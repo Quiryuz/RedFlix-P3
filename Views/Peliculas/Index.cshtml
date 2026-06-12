@@ -1,22 +1,23 @@
 ﻿@model IEnumerable<RedFlix.Models.Tmdb.TmdbMovieResult>
 @{
-    ViewBag.Title = ViewBag.Titulo ?? "Películas";
+    ViewBag.Title = ViewBag.Titulo ?? "Peliculas";
 }
 
 <div class="catalog-header">
     <h1 class="catalog-title">@ViewBag.Title</h1>
-    <p class="catalog-subtitle">Explorá el catálogo desde TheMovieDB</p>
+    <p class="catalog-subtitle">@(ViewBag.ClimaMotivo ?? "Explora el catalogo desde TheMovieDB")</p>
 </div>
 
 <div class="catalog-toolbar">
     @using (Html.BeginForm("Buscar", "Peliculas", FormMethod.Get, new { @class = "catalog-search-form" }))
     {
-        <input type="text" name="q" class="form-control catalog-search-input" placeholder="Buscar películas..." />
+        <input type="text" name="q" class="form-control catalog-search-input" placeholder="Buscar peliculas..." />
         <button type="submit" class="btn btn-danger">Buscar</button>
     }
     <div class="catalog-links">
         @Html.ActionLink("Populares", "Index", "Peliculas", null, new { @class = "btn btn-outline-light btn-sm" })
         @Html.ActionLink("Tendencias", "Tendencias", "Peliculas", null, new { @class = "btn btn-outline-light btn-sm" })
+        @Html.ActionLink("Por clima", "RecomendadasPorClima", "Peliculas", null, new { @class = "btn btn-outline-light btn-sm" })
     </div>
 </div>
 
@@ -27,7 +28,7 @@
 
 @if (Model == null || !Model.Any())
 {
-    <p class="text-muted">No hay películas para mostrar.</p>
+    <p class="text-muted">No hay peliculas para mostrar.</p>
 }
 else
 {
@@ -44,7 +45,7 @@ else
                             {
                                 @item.ReleaseDate.Substring(0, Math.Min(4, item.ReleaseDate.Length))
                             }
-                            · ★ @item.VoteAverage.ToString("0.0")
+                            - Puntaje @item.VoteAverage.ToString("0.0")
                         </p>
                         <p class="catalog-overview">@item.Overview</p>
                     </div>

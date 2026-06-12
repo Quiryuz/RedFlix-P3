@@ -1,0 +1,77 @@
+@model IEnumerable<RedFlix.Models.HistorialVisualizacionViewModel>
+
+@{
+    ViewBag.Title = "Historial";
+    ViewBag.ModuleTitle = "Historial";
+    ViewBag.ModuleSubtitle = "Visualizaciones del perfil activo: " + (ViewBag.PerfilActivo ?? "");
+    ViewBag.ShowCreate = false;
+}
+
+@Html.Partial("_ModuleHeader")
+
+<div class="module-footer-links mb-3">
+    @Html.ActionLink("Mis listas", "Listas", null, new { @class = "btn btn-outline-light btn-sm" })
+    @Html.ActionLink("Mis calificaciones", "MisCalificaciones", null, new { @class = "btn btn-outline-light btn-sm" })
+    @Html.ActionLink("Volver a mi perfil", "Menu", null, new { @class = "module-back-link" })
+    @if (Model != null && Model.Any())
+    {
+        using (Html.BeginForm("LimpiarHistorial", "MiPerfil", FormMethod.Post, new { @class = "d-inline" }))
+        {
+            @Html.AntiForgeryToken()
+            <button type="submit" class="btn btn-outline-danger btn-sm">Limpiar historial</button>
+        }
+    }
+</div>
+
+@if (Model == null || !Model.Any())
+{
+    <div class="module-card">
+        <p class="text-muted mb-0">Todavia no hay visualizaciones registradas.</p>
+    </div>
+}
+else
+{
+    <div class="module-card module-card-table">
+        <div class="table-responsive">
+            <table class="table module-table">
+                <thead>
+                    <tr>
+                        <th>Fecha</th>
+                        <th>Contenido</th>
+                        <th>Tipo</th>
+                        <th>Genero</th>
+                        <th>TMDB</th>
+                        <th>Mi calificacion</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        var controller = item.Tipo == "Serie" ? "Series" : "Peliculas";
+                        <tr>
+                            <td>@item.FechaVisualizacion.ToString("dd/MM/yyyy HH:mm")</td>
+                            <td>
+                                <a href="@Url.Action("Detalle", controller, new { id = item.TmdbID })" class="module-action">
+                                    @item.Titulo
+                                </a>
+                            </td>
+                            <td>@item.Tipo</td>
+                            <td>@(string.IsNullOrWhiteSpace(item.Generos) ? "-" : item.Generos)</td>
+                            <td>@item.CalificacionTmdb.ToString("0.0")</td>
+                            <td>
+                                @if (item.CalificacionPerfil.HasValue)
+                                {
+                                    <span class="rating-summary">@item.CalificacionPerfil / 5</span>
+                                }
+                                else
+                                {
+                                    <span class="text-muted">Sin calificar</span>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}

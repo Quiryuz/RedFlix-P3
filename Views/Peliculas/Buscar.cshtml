@@ -1,6 +1,6 @@
 @model IEnumerable<RedFlix.Models.Tmdb.TmdbMovieResult>
 @{
-    ViewBag.Title = "Buscar películas";
+    ViewBag.Title = "Buscar peliculas";
 }
 
 <div class="catalog-header">
@@ -10,7 +10,7 @@
 <div class="catalog-toolbar">
     @using (Html.BeginForm("Buscar", "Peliculas", FormMethod.Get, new { @class = "catalog-search-form" }))
     {
-        <input type="text" name="q" value="@ViewBag.Query" class="form-control catalog-search-input" placeholder="Buscar películas..." />
+        <input type="text" name="q" value="@ViewBag.Query" class="form-control catalog-search-input" placeholder="Buscar peliculas..." />
         <button type="submit" class="btn btn-danger">Buscar</button>
     }
     @Html.ActionLink("Ver populares", "Index", "Peliculas", null, new { @class = "btn btn-outline-light btn-sm" })
@@ -23,7 +23,7 @@
 
 @if (Model == null || !Model.Any())
 {
-    <p class="text-muted">No se encontraron películas.</p>
+    <p class="text-muted">No se encontraron peliculas.</p>
 }
 else
 {
@@ -35,7 +35,7 @@ else
                     <img src="@RedFlix.Services.TMDBService.GetPosterUrl(item.PosterPath)" alt="@item.Title" class="catalog-poster" />
                     <div class="catalog-card-body">
                         <h3>@item.Title</h3>
-                        <p class="catalog-meta">★ @item.VoteAverage.ToString("0.0")</p>
+                        <p class="catalog-meta">Puntaje @item.VoteAverage.ToString("0.0")</p>
                     </div>
                 </a>
                 @Html.Partial("_ContentActions", null, new ViewDataDictionary(ViewData) { { "TmdbId", item.Id }, { "Tipo", "Pelicula" } })

@@ -83,6 +83,10 @@ CREATE TABLE usuarios (
     Nombre VARCHAR(50) NOT NULL,
     Mail VARCHAR(50) NOT NULL,
     RolID INT NOT NULL,
+    NombreUsuario VARCHAR(50) NULL,
+    FechaRegistro DATETIME NULL DEFAULT GETDATE(),
+    EstadoCuenta VARCHAR(20) NULL DEFAULT 'Activa',
+    FotoPerfil VARCHAR(255) NULL,
 
     CONSTRAINT fk_rol_usuario
     FOREIGN KEY (RolID)
@@ -114,6 +118,43 @@ CREATE TABLE rolesPermisos (
     CONSTRAINT fk_permiso_rol
     FOREIGN KEY (PermisoID)
     REFERENCES permisos(ID)
+)
+
+CREATE TABLE auditoriaUsuarios (
+    ID INT IDENTITY(1,1) PRIMARY KEY,
+    UsuarioCreadorID INT NULL,
+    NombreCreador VARCHAR(100) NOT NULL,
+    UsuarioCreadoID INT NOT NULL,
+    RolAsignadoID INT NOT NULL,
+    RolAsignadoNombre VARCHAR(50) NOT NULL,
+    Fecha DATETIME NOT NULL DEFAULT GETDATE(),
+    DireccionIP VARCHAR(50) NULL
+)
+
+CREATE TABLE auditoriaPermisosRoles (
+    ID INT IDENTITY(1,1) PRIMARY KEY,
+    UsuarioCreadorID INT NULL,
+    NombreCreador VARCHAR(100) NOT NULL,
+    RolID INT NOT NULL,
+    RolNombre VARCHAR(50) NOT NULL,
+    PermisoID INT NOT NULL,
+    PermisoNombre VARCHAR(100) NOT NULL,
+    Accion VARCHAR(20) NOT NULL,
+    Fecha DATETIME NOT NULL DEFAULT GETDATE(),
+    DireccionIP VARCHAR(50) NULL
+)
+
+CREATE TABLE historialVisualizaciones (
+    ID INT IDENTITY(1,1) PRIMARY KEY,
+    PerfilID INT NOT NULL,
+    TmdbID INT NOT NULL,
+    Tipo VARCHAR(50) NOT NULL,
+    Titulo VARCHAR(255) NOT NULL,
+    Generos VARCHAR(255) NULL,
+    CalificacionTmdb DECIMAL(5,2) NOT NULL,
+    CalificacionPerfil INT NULL,
+    PosterPath VARCHAR(255) NULL,
+    FechaVisualizacion DATETIME NOT NULL DEFAULT GETDATE()
 )
 
 ALTER TABLE usuarios

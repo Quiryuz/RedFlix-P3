@@ -3,14 +3,14 @@
 @{
     ViewBag.Title = "Eliminar lista";
     ViewBag.ModuleTitle = "Eliminar lista";
-    ViewBag.ModuleSubtitle = "Se quitará la lista y su contenido";
+    ViewBag.ModuleSubtitle = "Se quitara la lista y su contenido";
     ViewBag.ShowCreate = false;
 }
 
 @Html.Partial("_ModuleHeader")
 
 <div class="module-card">
-    <p class="module-delete-warning">¿Estás seguro de que querés eliminar la lista "@Model.nombre"?</p>
+    <p class="module-delete-warning">Estas seguro de que queres eliminar la lista "@Model.nombre"?</p>
     @using (Html.BeginForm())
     {
         @Html.AntiForgeryToken()

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Net;
 using System.Web;
@@ -42,7 +43,7 @@ namespace RedFlix.Controllers
         [AuthorizePermission(Entity = PermissionKeys.Usuarios, AllowAnonymous = true)]
         public ActionResult Create()
         {
-            ViewBag.RolID = new SelectList(db.Roles, "ID", "Nombre");
+            PrepararFormularioCreacionUsuario();
             return View();
         }
 
@@ -54,6 +55,30 @@ namespace RedFlix.Controllers
         [AuthorizePermission(Entity = PermissionKeys.Usuarios, AllowAnonymous = true)]
         public ActionResult Create([Bind(Include = "ID,Nombre,Mail,RolID,Contrasena")] usuarios usuarios)
         {
+            var esAdministrador = EsAdministradorAutenticado();
+            var rolUsuario = ObtenerRolUsuario();
+
+            if (rolUsuario == null)
+            {
+                ModelState.AddModelError("", "No se encontro el rol base Usuario.");
+                PrepararFormularioCreacionUsuario(usuarios.RolID);
+                return View(usuarios);
+            }
+
+            if (!esAdministrador)
+            {
+                if (usuarios.RolID != 0 && usuarios.RolID != rolUsuario.ID)
+                {
+                    return new HttpStatusCodeResult(HttpStatusCode.Forbidden, "No autorizado para asignar roles especiales.");
+                }
+
+                usuarios.RolID = rolUsuario.ID;
+            }
+            else if (!db.Roles.Any(r => r.ID == usuarios.RolID))
+            {
+                ModelState.AddModelError("RolID", "Debe seleccionar un rol valido.");
+            }
+
             if (ModelState.IsValid)
             {
                 usuarios.Contrasena =
@@ -63,9 +88,13 @@ namespace RedFlix.Controllers
                 db.SaveChanges();
 
                 return RedirectToAction("Index");
+                RegistrarAuditoriaCreacionUsuario(usuarios.ID, usuarios.RolID);
+                return esAdministrador
+                    ? RedirectToAction("Index")
+                    : RedirectToAction("Index", "Login");
             }
 
-            ViewBag.RolID = new SelectList(db.Roles, "ID", "Nombre", usuarios.RolID);
+            PrepararFormularioCreacionUsuario(usuarios.RolID);
             return View(usuarios);
         }
 
@@ -207,6 +236,70 @@ namespace RedFlix.Controllers
                 db.Dispose();
             }
             base.Dispose(disposing);
+        }
+
+        private void PrepararFormularioCreacionUsuario(int? rolSeleccionado = null)
+        {
+            var puedeSeleccionarRol = EsAdministradorAutenticado();
+            ViewBag.PuedeSeleccionarRol = puedeSeleccionarRol;
+
+            if (puedeSeleccionarRol)
+            {
+                ViewBag.RolID = new SelectList(db.Roles.OrderBy(r => r.Nombre), "ID", "Nombre", rolSeleccionado);
+            }
+        }
+
+        private bool EsAdministradorAutenticado()
+        {
+            if (Session["RolID"] == null)
+            {
+                return false;
+            }
+
+            var rolId = Convert.ToInt32(Session["RolID"]);
+            return db.Roles.Any(r => r.ID == rolId && r.Nombre == "Administrador");
+        }
+
+        private Roles ObtenerRolUsuario()
+        {
+            return db.Roles.FirstOrDefault(r => r.Nombre == "Usuario");
+        }
+
+        private void RegistrarAuditoriaCreacionUsuario(int usuarioCreadoId, int rolAsignadoId)
+        {
+            AsegurarTablaAuditoriaUsuarios();
+
+            var usuarioCreadorId = Session["UsuarioID"] == null ? (int?)null : (int)Session["UsuarioID"];
+            var nombreCreador = Session["Nombre"] == null ? "Sin sesion" : Session["Nombre"].ToString();
+            var rolAsignado = db.Roles.FirstOrDefault(r => r.ID == rolAsignadoId);
+
+            db.Database.ExecuteSqlCommand(
+                @"INSERT INTO auditoriaUsuarios (UsuarioCreadorID, NombreCreador, UsuarioCreadoID, RolAsignadoID, RolAsignadoNombre, Fecha, DireccionIP)
+                  VALUES (@usuarioCreadorId, @nombreCreador, @usuarioCreadoId, @rolAsignadoId, @rolAsignadoNombre, GETDATE(), @direccionIp)",
+                new SqlParameter("@usuarioCreadorId", (object)usuarioCreadorId ?? DBNull.Value),
+                new SqlParameter("@nombreCreador", nombreCreador),
+                new SqlParameter("@usuarioCreadoId", usuarioCreadoId),
+                new SqlParameter("@rolAsignadoId", rolAsignadoId),
+                new SqlParameter("@rolAsignadoNombre", rolAsignado != null ? rolAsignado.Nombre : string.Empty),
+                new SqlParameter("@direccionIp", Request.UserHostAddress ?? string.Empty));
+        }
+
+        private void AsegurarTablaAuditoriaUsuarios()
+        {
+            db.Database.ExecuteSqlCommand(@"
+IF OBJECT_ID('dbo.auditoriaUsuarios', 'U') IS NULL
+BEGIN
+    CREATE TABLE dbo.auditoriaUsuarios (
+        ID INT IDENTITY(1,1) PRIMARY KEY,
+        UsuarioCreadorID INT NULL,
+        NombreCreador VARCHAR(100) NOT NULL,
+        UsuarioCreadoID INT NOT NULL,
+        RolAsignadoID INT NOT NULL,
+        RolAsignadoNombre VARCHAR(50) NOT NULL,
+        Fecha DATETIME NOT NULL DEFAULT GETDATE(),
+        DireccionIP VARCHAR(50) NULL
+    )
+END");
         }
     }
 }

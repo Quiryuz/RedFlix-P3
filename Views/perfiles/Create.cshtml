@@ -2,8 +2,8 @@
 
 @{
     ViewBag.Title = "Create";
-    var iconos = ViewBag.Iconos as string[] ?? RedFlix.Services.ProfileService.DefaultIcons;
-    var selectedIcon = Model != null && !string.IsNullOrWhiteSpace(Model.Icono) ? Model.Icono : iconos[0];
+    var iconos = ViewBag.Iconos as string[] ?? RedFlix.Services.ProfileService.IconosPredeterminados;
+    var iconoSeleccionado = Model != null && !string.IsNullOrWhiteSpace(Model.Icono) ? Model.Icono : iconos[0];
 }
 
 @{ ViewBag.ModuleTitle = "Crear"; ViewBag.ModuleSubtitle = "Perfiles por cuenta de usuario"; ViewBag.ShowCreate = false; }
@@ -32,7 +32,7 @@
                 @foreach (var icono in iconos)
                 {
                     <label class="profile-icon-option">
-                        <input type="radio" name="Icono" value="@icono" @(selectedIcon == icono ? "checked" : "") />
+                        <input type="radio" name="Icono" value="@icono" @(iconoSeleccionado == icono ? "checked" : "") />
                         <span class="profile-avatar profile-avatar-sm profile-avatar-@icono"></span>
                     </label>
                 }
@@ -48,9 +48,9 @@
         </div>
 
         <div class="form-group">
-            <label>Contraseña del perfil</label>
+            <label>Contrasena del perfil</label>
             <input type="password" name="ContrasenaPerfil" class="form-control" placeholder="Opcional" />
-            <small class="text-muted">Podés dejarla vacía si el perfil no requiere contraseña.</small>
+            <small class="text-muted">Podes dejarla vacia si el perfil no requiere contrasena.</small>
         </div>
 
         <div class="form-group">

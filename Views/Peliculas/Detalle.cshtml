@@ -18,9 +18,9 @@
                     }
                     @if (Model.Runtime.HasValue)
                     {
-                        <span> · @Model.Runtime min</span>
+                        <span> - @Model.Runtime min</span>
                     }
-                    <span> · ★ @Model.VoteAverage.ToString("0.0")</span>
+                    <span> - Puntaje @Model.VoteAverage.ToString("0.0")</span>
                 </p>
                 @if (Model.Genres != null && Model.Genres.Any())
                 {
@@ -29,8 +29,9 @@
                 <p>@Model.Overview</p>
                 <div class="detail-actions">
                     @Html.Partial("_ContentActions", null, new ViewDataDictionary(ViewData) { { "TmdbId", Model.Id }, { "Tipo", "Pelicula" } })
+                    @Html.Partial("_RatingActions", null, new ViewDataDictionary(ViewData) { { "TmdbId", Model.Id }, { "Tipo", "Pelicula" } })
                 </div>
-                @Html.ActionLink("← Volver al catálogo", "Index", "Peliculas", null, new { @class = "btn btn-outline-light btn-sm mt-2" })
+                @Html.ActionLink("<- Volver al catalogo", "Index", "Peliculas", null, new { @class = "btn btn-outline-light btn-sm mt-2" })
             </div>
         </div>
     </div>

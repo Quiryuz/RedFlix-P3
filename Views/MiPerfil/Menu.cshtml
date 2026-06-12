@@ -1,0 +1,96 @@
+@model RedFlix.Models.MiPerfilPanelViewModel
+
+@{
+    ViewBag.Title = "Mi perfil";
+    ViewBag.ModuleTitle = "Mi perfil";
+    ViewBag.ModuleSubtitle = "Centro de cuenta, perfil y actividad";
+    ViewBag.ShowCreate = false;
+    var info = Model.InformacionPersonal;
+    var perfil = Model.Perfil;
+}
+
+@Html.Partial("_ModuleHeader")
+
+<div class="profile-dashboard profile-dashboard-single">
+    <div class="profile-dashboard-content">
+        <section id="informacion-personal" class="profile-info-card module-card">
+            <div class="profile-info-header profile-info-header-compact">
+                <div class="profile-compact-identity">
+                    <h2>@perfil.Nombre</h2>
+                </div>
+                <button class="btn btn-outline-light btn-sm" type="button" data-bs-toggle="collapse" data-bs-target="#datos-personales" aria-expanded="false" aria-controls="datos-personales">
+                    Ver informacion personal
+                </button>
+            </div>
+
+            <div id="datos-personales" class="collapse">
+                <p class="profile-menu-eyebrow">Informacion personal</p>
+                <div class="profile-info-main">
+                    @if (!string.IsNullOrWhiteSpace(info.FotoPerfil))
+                    {
+                        <img src="@info.FotoPerfil" alt="@info.NombreCompleto" class="profile-photo profile-photo-lg" />
+                    }
+                    else
+                    {
+                        <div class="profile-avatar profile-avatar-lg profile-avatar-@info.IconoPerfil"></div>
+                    }
+
+                    <dl class="profile-info-list">
+                        <dt>Nombre completo</dt>
+                        <dd>@info.NombreCompleto</dd>
+
+                        <dt>Nombre de usuario</dt>
+                        <dd>@info.NombreUsuario</dd>
+
+                        <dt>Correo electronico</dt>
+                        <dd>@info.CorreoElectronico</dd>
+
+                        <dt>Fecha de registro</dt>
+                        <dd>@info.FechaRegistro.ToString("dd/MM/yyyy")</dd>
+
+                        <dt>Rol del usuario</dt>
+                        <dd>@info.RolUsuario</dd>
+
+                        <dt>Estado de la cuenta</dt>
+                        <dd><span class="profile-status-badge">@info.EstadoCuenta</span></dd>
+                    </dl>
+                </div>
+
+                <div class="module-footer-links mt-3">
+                    @Html.ActionLink("Editar Perfil", "Edit", new { id = perfil.ID }, new { @class = "btn btn-danger btn-sm" })
+                </div>
+            </div>
+        </section>
+
+        <section class="profile-summary-grid">
+            <a href="@Url.Action("Listas")" class="profile-menu-card">
+                <span class="profile-menu-count">@Model.TotalListas</span>
+                <h3>Mis listas</h3>
+                <p>Listas creadas para este perfil.</p>
+            </a>
+
+            <a href="@Url.Action("Favoritos")" class="profile-menu-card">
+                <span class="profile-menu-count">@Model.TotalFavoritos</span>
+                <h3>Favoritos</h3>
+                <p>Contenidos marcados como favoritos.</p>
+            </a>
+
+            <a href="@Url.Action("MisCalificaciones")" class="profile-menu-card">
+                <span class="profile-menu-count">@Model.TotalCalificaciones</span>
+                <h3>Calificaciones</h3>
+                <p>Peliculas y series puntuadas.</p>
+            </a>
+
+            <a href="@Url.Action("Historial")" class="profile-menu-card">
+                <span class="profile-menu-count">@Model.TotalHistorial</span>
+                <h3>Historial</h3>
+                <p>Visualizaciones registradas.</p>
+            </a>
+        </section>
+    </div>
+</div>
+
+<div class="module-footer-links mt-4">
+    @Html.ActionLink("Cambiar perfil", "Index", null, new { @class = "btn btn-outline-light btn-sm" })
+    @Html.ActionLink("Crear perfil", "Create", null, new { @class = "module-back-link" })
+</div>

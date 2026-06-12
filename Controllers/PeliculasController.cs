@@ -12,23 +12,25 @@ namespace RedFlix.Controllers
     [AuthorizePermission(Entity = PermissionKeys.Peliculas)]
     public class PeliculasController : Controller
     {
-        private readonly TMDBService _tmdb = new TMDBService();
-        private readonly RedFlixIIIEntities db = new RedFlixIIIEntities();
+        private readonly TMDBService _servicioTmdb = new TMDBService();
+        private readonly HistorialVisualizacionService _servicioHistorial = new HistorialVisualizacionService();
+        private readonly ClimaService _servicioClima = new ClimaService();
+        private readonly RedFlixIIIEntities _baseDatos = new RedFlixIIIEntities();
 
         public async Task<ActionResult> Index()
         {
-            var profileRedirect = RedirectToProfileSelectionIfNeeded();
-            if (profileRedirect != null)
+            var redireccionPerfil = RedirigirSeleccionPerfilSiHaceFalta();
+            if (redireccionPerfil != null)
             {
-                return profileRedirect;
+                return redireccionPerfil;
             }
 
             try
             {
-                var response = await _tmdb.GetPopularMoviesAsync();
-                ViewBag.Titulo = "Películas populares";
-                LoadProfileContentState();
-                return View(response.Results);
+                var respuesta = await _servicioTmdb.GetPopularMoviesAsync();
+                ViewBag.Titulo = "Peliculas populares";
+                CargarEstadoContenidoPerfil();
+                return View(respuesta.Results);
             }
             catch (Exception ex)
             {
@@ -39,18 +41,18 @@ namespace RedFlix.Controllers
 
         public async Task<ActionResult> Tendencias()
         {
-            var profileRedirect = RedirectToProfileSelectionIfNeeded();
-            if (profileRedirect != null)
+            var redireccionPerfil = RedirigirSeleccionPerfilSiHaceFalta();
+            if (redireccionPerfil != null)
             {
-                return profileRedirect;
+                return redireccionPerfil;
             }
 
             try
             {
-                var response = await _tmdb.GetTrendingMoviesAsync();
-                ViewBag.Titulo = "Películas en tendencia";
-                LoadProfileContentState();
-                return View("Index", response.Results);
+                var respuesta = await _servicioTmdb.GetTrendingMoviesAsync();
+                ViewBag.Titulo = "Peliculas en tendencia";
+                CargarEstadoContenidoPerfil();
+                return View("Index", respuesta.Results);
             }
             catch (Exception ex)
             {
@@ -59,12 +61,36 @@ namespace RedFlix.Controllers
             }
         }
 
+        public async Task<ActionResult> RecomendadasPorClima()
+        {
+            var redireccionPerfil = RedirigirSeleccionPerfilSiHaceFalta();
+            if (redireccionPerfil != null)
+            {
+                return redireccionPerfil;
+            }
+
+            try
+            {
+                var recomendacion = await _servicioClima.ObtenerRecomendacionPorClimaAsync();
+                var respuesta = await _servicioTmdb.GetMoviesByGenreAsync(recomendacion.GeneroTmdbId);
+                ViewBag.Titulo = "Recomendadas por clima: " + recomendacion.GeneroNombre;
+                ViewBag.ClimaMotivo = recomendacion.Ciudad + " - " + recomendacion.Descripcion + ". " + recomendacion.Motivo;
+                CargarEstadoContenidoPerfil();
+                return View("Index", respuesta.Results);
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Error = "No se pudieron cargar recomendaciones por clima: " + ex.Message;
+                return View("Index", new System.Collections.Generic.List<TmdbMovieResult>());
+            }
+        }
+
         public async Task<ActionResult> Detalle(int? id)
         {
-            var profileRedirect = RedirectToProfileSelectionIfNeeded();
-            if (profileRedirect != null)
+            var redireccionPerfil = RedirigirSeleccionPerfilSiHaceFalta();
+            if (redireccionPerfil != null)
             {
-                return profileRedirect;
+                return redireccionPerfil;
             }
 
             if (id == null || id <= 0)
@@ -74,23 +100,25 @@ namespace RedFlix.Controllers
 
             try
             {
-                var movie = await _tmdb.GetMovieDetailAsync(id.Value);
-                LoadProfileContentState();
-                return View(movie);
+                var pelicula = await _servicioTmdb.GetMovieDetailAsync(id.Value);
+                CargarEstadoContenidoPerfil();
+                CargarCalificacionPerfil(id.Value, "Pelicula");
+                RegistrarVisualizacion(pelicula);
+                return View(pelicula);
             }
             catch (Exception ex)
             {
-                ViewBag.Error = "No se pudo cargar la película: " + ex.Message;
+                ViewBag.Error = "No se pudo cargar la pelicula: " + ex.Message;
                 return RedirectToAction("Index");
             }
         }
 
         public async Task<ActionResult> Buscar(string q)
         {
-            var profileRedirect = RedirectToProfileSelectionIfNeeded();
-            if (profileRedirect != null)
+            var redireccionPerfil = RedirigirSeleccionPerfilSiHaceFalta();
+            if (redireccionPerfil != null)
             {
-                return profileRedirect;
+                return redireccionPerfil;
             }
 
             ViewBag.Query = q;
@@ -102,18 +130,18 @@ namespace RedFlix.Controllers
 
             try
             {
-                var response = await _tmdb.SearchMoviesAsync(q);
-                LoadProfileContentState();
-                return View(response.Results);
+                var respuesta = await _servicioTmdb.SearchMoviesAsync(q);
+                CargarEstadoContenidoPerfil();
+                return View(respuesta.Results);
             }
             catch (Exception ex)
             {
-                ViewBag.Error = "Error en la búsqueda: " + ex.Message;
+                ViewBag.Error = "Error en la busqueda: " + ex.Message;
                 return View(new System.Collections.Generic.List<TmdbMovieResult>());
             }
         }
 
-        private void LoadProfileContentState()
+        private void CargarEstadoContenidoPerfil()
         {
             if (Session["PerfilID"] == null)
             {
@@ -125,30 +153,77 @@ namespace RedFlix.Controllers
 
             var perfilId = (int)Session["PerfilID"];
             ViewBag.FavoritosIds = new HashSet<int>(
-                db.favoritos
+                _baseDatos.favoritos
                     .Where(f => f.perfilID == perfilId && f.tipo == "Pelicula")
                     .Select(f => f.tmdbID)
                     .ToList());
 
-            ViewBag.ListasPerfil = db.listas
+            ViewBag.ListasPerfil = _baseDatos.listas
                 .Where(l => l.perfilID == perfilId)
                 .OrderBy(l => l.nombre)
                 .Select(l => new SelectListItem { Value = l.ID.ToString(), Text = l.nombre })
                 .ToList();
 
-            var listaIds = db.listas
+            var listaIds = _baseDatos.listas
                 .Where(l => l.perfilID == perfilId)
                 .Select(l => l.ID)
                 .ToList();
 
             ViewBag.ListasContenidoKeys = new HashSet<string>(
-                db.listaContenido
+                _baseDatos.listaContenido
                     .Where(c => listaIds.Contains(c.listaID) && c.tipo == "Pelicula")
                     .Select(c => c.listaID + ":" + c.tmdbID)
                     .ToList());
         }
 
-        private ActionResult RedirectToProfileSelectionIfNeeded()
+        private void CargarCalificacionPerfil(int tmdbId, string tipo)
+        {
+            ViewBag.CalificacionPersonal = 0;
+
+            if (Session["PerfilID"] == null)
+            {
+                return;
+            }
+
+            var perfilId = (int)Session["PerfilID"];
+            var calificacion = _baseDatos.calificaciones.FirstOrDefault(c =>
+                c.perfilID == perfilId &&
+                c.tmdbID == tmdbId &&
+                c.tipo == tipo);
+
+            if (calificacion != null)
+            {
+                ViewBag.CalificacionPersonal = calificacion.puntaje;
+            }
+        }
+
+        private void RegistrarVisualizacion(TmdbMovieDetail pelicula)
+        {
+            if (Session["PerfilID"] == null || pelicula == null || DebeOmitirHistorialVisualizacion())
+            {
+                return;
+            }
+
+            var generos = pelicula.Genres == null
+                ? string.Empty
+                : string.Join(", ", pelicula.Genres.Select(g => g.Name));
+
+            _servicioHistorial.RegistrarVisualizacion(
+                (int)Session["PerfilID"],
+                pelicula.Id,
+                "Pelicula",
+                pelicula.Title,
+                generos,
+                pelicula.VoteAverage,
+                pelicula.PosterPath);
+        }
+
+        private bool DebeOmitirHistorialVisualizacion()
+        {
+            return TempData["OmitirHistorialVisualizacion"] != null;
+        }
+
+        private ActionResult RedirigirSeleccionPerfilSiHaceFalta()
         {
             if (Session["UsuarioID"] != null && Session["PerfilID"] == null)
             {

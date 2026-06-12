@@ -11,13 +11,13 @@
 
 <div class="module-footer-links mb-3">
     @Html.ActionLink("Mis listas", "Listas", null, new { @class = "btn btn-outline-light btn-sm" })
-    @Html.ActionLink("Mis perfiles", "Index", null, new { @class = "module-back-link" })
+    @Html.ActionLink("Volver a mi perfil", "Menu", null, new { @class = "module-back-link" })
 </div>
 
 @if (Model == null || !Model.Any())
 {
     <div class="module-card">
-        <p class="text-muted mb-0">Todavía no agregaste favoritos.</p>
+        <p class="text-muted mb-0">Todavia no agregaste favoritos.</p>
     </div>
 }
 else
@@ -31,7 +31,7 @@ else
                     <img src="@RedFlix.Services.TMDBService.GetPosterUrl(item.PosterPath)" alt="@item.Titulo" class="catalog-poster" />
                     <div class="catalog-card-body">
                         <h3>@item.Titulo</h3>
-                        <p class="catalog-meta">@item.Tipo · ★ @item.Puntaje.ToString("0.0")</p>
+                        <p class="catalog-meta">@item.Tipo - Puntaje @item.Puntaje.ToString("0.0")</p>
                     </div>
                 </a>
                 <div class="content-actions">

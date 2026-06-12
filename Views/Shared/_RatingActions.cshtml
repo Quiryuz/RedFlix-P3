@@ -1,0 +1,37 @@
+@{
+    var tmdbId = (int)ViewData["TmdbId"];
+    var tipo = (string)ViewData["Tipo"];
+    var calificacion = ViewBag.CalificacionPersonal is int ? (int)ViewBag.CalificacionPersonal : 0;
+    var textoCalificacion = calificacion > 0
+        ? calificacion.ToString() + " / 5"
+        : "Sin calificar";
+}
+
+@if (Session["PerfilID"] != null)
+{
+    using (Html.BeginForm("Calificar", "MiPerfil", FormMethod.Post, new { @class = "rating-panel" }))
+    {
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="tmdbId" value="@tmdbId" />
+        <input type="hidden" name="tipo" value="@tipo" />
+        <input type="hidden" name="returnUrl" value="@Request.RawUrl" />
+
+        <span class="rating-label">Tu calificacion</span>
+        <div class="rating-stars" aria-label="Calificacion personal">
+            @for (var estrella = 1; estrella <= 5; estrella++)
+            {
+                var starText = estrella.ToString() + " estrellas";
+                <span class="rating-star @(calificacion >= estrella ? "is-full-active" : "")">
+                    <svg class="rating-star-svg rating-star-bg" viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M12 2.6l2.92 5.92 6.53.95-4.72 4.6 1.11 6.5L12 17.5l-5.84 3.07 1.11-6.5-4.72-4.6 6.53-.95L12 2.6z" />
+                    </svg>
+                    <svg class="rating-star-svg rating-star-fill" viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M12 2.6l2.92 5.92 6.53.95-4.72 4.6 1.11 6.5L12 17.5l-5.84 3.07 1.11-6.5-4.72-4.6 6.53-.95L12 2.6z" />
+                    </svg>
+                    <button type="submit" name="puntaje" value="@estrella" class="rating-hit" title="@starText" aria-label="@starText"></button>
+                </span>
+            }
+        </div>
+        <span class="rating-current">@textoCalificacion</span>
+    }
+}

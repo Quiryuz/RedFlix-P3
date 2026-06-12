@@ -95,6 +95,7 @@ namespace RedFlix.Helpers
                 case "favoritos": return PermissionKeys.Favoritos;
                 case "Peliculas": return PermissionKeys.Peliculas;
                 case "Series": return PermissionKeys.Series;
+                case "Auditoria": return PermissionKeys.Auditoria;
                 default: return controllerName;
             }
         }

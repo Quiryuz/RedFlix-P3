@@ -9,7 +9,7 @@ namespace RedFlix.Controllers
     public class LoginController : Controller
     {
         private readonly RedFlixIIIEntities db = new RedFlixIIIEntities();
-        private readonly PermissionService _permissionService = new PermissionService();
+        private readonly PermissionService _servicioPermisos = new PermissionService();
 
         public ActionResult Index()
         {
@@ -28,6 +28,7 @@ namespace RedFlix.Controllers
             {
                 _permissionService.EnsurePermissionCatalog();
 
+                _servicioPermisos.AsegurarCatalogoPermisos();
                 Session["UsuarioID"] = usuario.ID;
                 Session["Nombre"] = usuario.Nombre;
                 Session["RolID"] = usuario.RolID;
@@ -39,10 +40,11 @@ namespace RedFlix.Controllers
                     Session,
                     _permissionService.GetPermissionNamesForRole(usuario.RolID));
 
+                    _servicioPermisos.ObtenerNombresPermisosPorRol(usuario.RolID));
                 return RedirectToAction("Index", "MiPerfil");
             }
 
-            ViewBag.Error = "Email o contraseña incorrectos";
+            ViewBag.Error = "Email o contrasena incorrectos";
             return View();
         }
 

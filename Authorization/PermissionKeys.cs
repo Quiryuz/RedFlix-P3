@@ -17,6 +17,7 @@ namespace RedFlix.Authorization
         public const string Favoritos = "Favoritos";
         public const string Peliculas = "Peliculas";
         public const string Series = "Series";
+        public const string Auditoria = "Auditoria";
 
         public static readonly string[] AccionesCrud = { Ver, Crear, Editar, Eliminar };
 
@@ -29,7 +30,8 @@ namespace RedFlix.Authorization
             { Listas, AccionesCrud },
             { Favoritos, AccionesCrud },
             { Peliculas, new[] { Ver } },
-            { Series, new[] { Ver } }
+            { Series, new[] { Ver } },
+            { Auditoria, new[] { Ver } }
         };
 
         public static string Build(string entidad, string accion)

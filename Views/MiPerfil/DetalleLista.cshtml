@@ -16,7 +16,7 @@
 @if (Model.Contenidos == null || !Model.Contenidos.Any())
 {
     <div class="module-card">
-        <p class="text-muted mb-0">Esta lista todavía no tiene películas o series.</p>
+        <p class="text-muted mb-0">Esta lista todavia no tiene peliculas o series.</p>
     </div>
 }
 else
@@ -30,7 +30,7 @@ else
                     <img src="@RedFlix.Services.TMDBService.GetPosterUrl(item.PosterPath)" alt="@item.Titulo" class="catalog-poster" />
                     <div class="catalog-card-body">
                         <h3>@item.Titulo</h3>
-                        <p class="catalog-meta">@item.Tipo · ★ @item.Puntaje.ToString("0.0")</p>
+                        <p class="catalog-meta">@item.Tipo - Puntaje @item.Puntaje.ToString("0.0")</p>
                     </div>
                 </a>
                 <div class="content-actions">
