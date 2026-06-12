@@ -52,6 +52,11 @@
                     <td class="module-actions">@Html.ActionLink("Ver calificaciones", "MisCalificaciones", null, new { @class = "module-action" })</td>
                 </tr>
                 <tr>
+                    <td>Historial</td>
+                    <td>@ViewBag.TotalHistorial visualizaciones registradas para este perfil.</td>
+                    <td class="module-actions">@Html.ActionLink("Ver historial", "Historial", null, new { @class = "module-action" })</td>
+                </tr>
+                <tr>
                     <td>Datos de cuenta</td>
                     <td>Informacion general del usuario logueado.</td>
                     <td class="module-actions">@Html.ActionLink("Ver cuenta", "Cuenta", null, new { @class = "module-action" })</td>

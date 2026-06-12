@@ -14,6 +14,7 @@ namespace RedFlix.Controllers
         private readonly RedFlixIIIEntities db = new RedFlixIIIEntities();
         private readonly ProfileService _servicioPerfiles = new ProfileService();
         private readonly TMDBService _servicioTmdb = new TMDBService();
+        private readonly HistorialVisualizacionService _servicioHistorial = new HistorialVisualizacionService();
 
         public ActionResult Index()
         {
@@ -44,6 +45,7 @@ namespace RedFlix.Controllers
             ViewBag.TotalListas = db.listas.Count(l => l.perfilID == perfil.ID);
             ViewBag.TotalFavoritos = db.favoritos.Count(f => f.perfilID == perfil.ID);
             ViewBag.TotalCalificaciones = db.calificaciones.Count(c => c.perfilID == perfil.ID);
+            ViewBag.TotalHistorial = _servicioHistorial.ContarHistorialPerfil(perfil.ID);
 
             return View(_servicioPerfiles.ConvertirAViewModel(perfil));
         }
@@ -250,6 +252,18 @@ namespace RedFlix.Controllers
 
             ViewBag.PerfilActivo = perfil.Nombre;
             return View(modelo);
+        }
+
+        public ActionResult Historial()
+        {
+            var perfil = ObtenerPerfilActual();
+            if (perfil == null)
+            {
+                return RedirectToAction("Index");
+            }
+
+            ViewBag.PerfilActivo = perfil.Nombre;
+            return View(_servicioHistorial.ObtenerHistorialPerfil(perfil.ID));
         }
 
         [HttpPost]
@@ -615,6 +629,7 @@ namespace RedFlix.Controllers
         {
             if (!string.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl))
             {
+                TempData["OmitirHistorialVisualizacion"] = true;
                 return Redirect(returnUrl);
             }
 

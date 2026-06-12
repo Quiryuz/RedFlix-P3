@@ -140,6 +140,19 @@ CREATE TABLE auditoriaPermisosRoles (
     DireccionIP VARCHAR(50) NULL
 )
 
+CREATE TABLE historialVisualizaciones (
+    ID INT IDENTITY(1,1) PRIMARY KEY,
+    PerfilID INT NOT NULL,
+    TmdbID INT NOT NULL,
+    Tipo VARCHAR(50) NOT NULL,
+    Titulo VARCHAR(255) NOT NULL,
+    Generos VARCHAR(255) NULL,
+    CalificacionTmdb DECIMAL(5,2) NOT NULL,
+    CalificacionPerfil INT NULL,
+    PosterPath VARCHAR(255) NULL,
+    FechaVisualizacion DATETIME NOT NULL DEFAULT GETDATE()
+)
+
 ALTER TABLE usuarios
 ADD CONSTRAINT uq_usuario_mail
 UNIQUE (Mail)

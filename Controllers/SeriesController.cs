@@ -13,6 +13,7 @@ namespace RedFlix.Controllers
     public class SeriesController : Controller
     {
         private readonly TMDBService _servicioTmdb = new TMDBService();
+        private readonly HistorialVisualizacionService _servicioHistorial = new HistorialVisualizacionService();
         private readonly RedFlixIIIEntities _baseDatos = new RedFlixIIIEntities();
 
         public async Task<ActionResult> Index()
@@ -77,6 +78,7 @@ namespace RedFlix.Controllers
                 var serie = await _servicioTmdb.GetSeriesDetailAsync(id.Value);
                 CargarEstadoContenidoPerfil();
                 CargarCalificacionPerfil(id.Value, "Serie");
+                RegistrarVisualizacion(serie);
                 return View(serie);
             }
             catch (Exception ex)
@@ -168,6 +170,32 @@ namespace RedFlix.Controllers
             {
                 ViewBag.CalificacionPersonal = calificacion.puntaje;
             }
+        }
+
+        private void RegistrarVisualizacion(TmdbTvDetail serie)
+        {
+            if (Session["PerfilID"] == null || serie == null || DebeOmitirHistorialVisualizacion())
+            {
+                return;
+            }
+
+            var generos = serie.Genres == null
+                ? string.Empty
+                : string.Join(", ", serie.Genres.Select(g => g.Name));
+
+            _servicioHistorial.RegistrarVisualizacion(
+                (int)Session["PerfilID"],
+                serie.Id,
+                "Serie",
+                serie.Name,
+                generos,
+                serie.VoteAverage,
+                serie.PosterPath);
+        }
+
+        private bool DebeOmitirHistorialVisualizacion()
+        {
+            return TempData["OmitirHistorialVisualizacion"] != null;
         }
 
         private ActionResult RedirigirSeleccionPerfilSiHaceFalta()

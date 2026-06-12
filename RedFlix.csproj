@@ -159,6 +159,7 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\AuditoriaUsuarioViewModel.cs" />
+    <Compile Include="Models\HistorialVisualizacionViewModel.cs" />
     <Compile Include="Models\Tmdb\TmdbModels.cs" />
     <Compile Include="listaContenido.cs">
       <DependentUpon>RedFlixModels.tt</DependentUpon>
@@ -192,6 +193,7 @@
       <DependentUpon>RedFlixModels.tt</DependentUpon>
     </Compile>
     <Compile Include="Services\PermissionService.cs" />
+    <Compile Include="Services\HistorialVisualizacionService.cs" />
     <Compile Include="Services\ProfileService.cs" />
     <Compile Include="Services\TMDBService.cs" />
     <Compile Include="usuarios.cs">
@@ -333,6 +335,7 @@
     <Content Include="Views\MiPerfil\EditarLista.cshtml" />
     <Content Include="Views\MiPerfil\EliminarLista.cshtml" />
     <Content Include="Views\MiPerfil\Favoritos.cshtml" />
+    <Content Include="Views\MiPerfil\Historial.cshtml" />
     <Content Include="Views\MiPerfil\Index.cshtml" />
     <Content Include="Views\MiPerfil\CrearLista.cshtml" />
     <Content Include="Views\MiPerfil\Listas.cshtml" />
